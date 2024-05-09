@@ -3,7 +3,7 @@ package validation
 import (
 	"errors"
 	"fmt"
-	exceptions "job-portal-project/api/expectionsss"
+	exceptions "job-portal-project/api/exceptions"
 	"net/http"
 
 	"github.com/go-playground/locales/en"

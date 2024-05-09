@@ -2,7 +2,7 @@ package entities
 
 import "time"
 
-var CreateJobApplicationTabel = "job_application_tbl"
+var CreateJobTable = "job_tbl"
 
 type Job struct {
 	JobId          int       `gorm:"column:job_id;size:30;not null;primaryKey" json:"job_id"`
@@ -14,9 +14,9 @@ type Job struct {
 	JobDescription string    `gorm:"column:job_description;size:50;not null" json:"job_description"`
 	JobLevel       string    `gorm:"column:job_level;size:50;not null" json:"job_level"`
 	JobVacancy     string    `gorm:"column:job_vacancy;size:50;not null" json:"job_vacancy"`
-	ActiveStatus   string    `gorm:"column:active_status;size:50;not null" json:"active_status"`
+	ActiveStatus   bool      `gorm:"column:active_status;size:50;not null" json:"active_status"`
 }
 
 func (*Job) TableName() string {
-	return CreateJobApplicationTabel
+	return CreateJobTable
 }

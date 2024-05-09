@@ -4,8 +4,8 @@ import (
 	mastercontroller "job-portal-project/api/controllers"
 	masteritemcontroller "job-portal-project/api/controllers/item"
 	masteroperationcontroller "job-portal-project/api/controllers/operation"
-	masterwarehousecontroller "job-portal-project/api/controllers/warehouse"
 	transactionworkshopcontroller "job-portal-project/api/controllers/transactions/workshop"
+	masterwarehousecontroller "job-portal-project/api/controllers/warehouse"
 	"job-portal-project/api/middlewares"
 
 	// _ "job-portal-project/docs"
@@ -159,7 +159,6 @@ func ItemLocationRouter(
 	router.Use(middleware.Recoverer)
 	router.Use(middlewares.MetricsMiddleware)
 
-	/
 	router.Get("/", ItemLocationController.GetAllItemLocation)
 	router.Get("/{item_location_id}", ItemLocationController.GetItemLocationById)
 	router.Post("/", ItemLocationController.SaveItemLocation)
@@ -334,7 +333,6 @@ func PurchasePriceRouter(
 	router.Use(middleware.Recoverer)
 	router.Use(middlewares.MetricsMiddleware)
 
-	/
 	router.Get("/", PurchasePriceController.GetAllPurchasePrice)
 	router.Get("/by-id/{purchase_price_id}", PurchasePriceController.GetPurchasePriceById)
 	router.Post("/", PurchasePriceController.SavePurchasePrice)

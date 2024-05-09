@@ -1,12 +1,13 @@
 package masterrepositoryimpl
 
 import (
-	entities "job-portal-project/api/entities/job"
-	entitypayloads "job-portal-project/api/entitypayloads"
+	entities "job-portal-project/api/entities"
 	exceptions "job-portal-project/api/exceptions"
+	entitypayloads "job-portal-project/api/payloads/entity-payloads"
+	"job-portal-project/api/payloads/pagination"
 
 	// "job-portal-project/api/entitypayloads/pagination"
-	// masterrepository "job-portal-project/api/repositories"
+	repository "job-portal-project/api/repositories"
 	"job-portal-project/api/utils"
 	"net/http"
 
@@ -16,57 +17,44 @@ import (
 type JobRepositoryImpl struct {
 }
 
-func StartJobRepositoryImpl() masterrepository.JobRepository {
+func StartJobRepositoryImpl() repository.JobRepository {
 	return &JobRepositoryImpl{}
 }
 
-func (r *JobRepositoryImpl) GetJobById(tx *gorm.DB, JobId int) (entitypayloads.JobPayload, *exceptions.BaseErrorResponse) {
-	entities := entities.Job{}
-	response := entitypayloads.JobPayload{}
+func (*JobRepositoryImpl) GetJobById(tx *gorm.DB, Id int) (entitypayloads.JobPayload, *exceptions.BaseErrorResponse) {
+	var JobMapping entities.Job
+	var JobResponse entitypayloads.JobPayload
 
-	err := tx.Model(&entities).
-		Where(entities.Job{
-			JobId: JobId,
-		}).
-		First(&entities).
-		Error
+	rows, err := tx.
+		Model(&JobMapping).
+		Where(entities.Job{JobId: Id}).
+		First(&JobResponse).
+		Rows()
 
 	if err != nil {
-		return response, &exceptions.BaseErrorResponse{
+
+		return JobResponse, &exceptions.BaseErrorResponse{
 			StatusCode: http.StatusInternalServerError,
 			Err:        err,
 		}
 	}
+	defer rows.Close()
 
-	// Copying values from entities to response
-	response.JobId = entities.JobId
-	response.JobCode = entities.JobCode
-	response.IsActive = entities.IsActive
-	response.BrandId = entities.BrandId
-	response.CustomerId = entities.CustomerId
-	response.ProfitCenterId = entities.ProfitCenterId
-	response.JobDateFrom = entities.JobDateFrom
-	response.JobDateTo = entities.JobDateTo
-	response.DealerId = entities.DealerId
-	response.TopId = entities.TopId
-	response.JobRemark = entities.JobRemark
-
-	return response, nil
+	return JobResponse, nil
 }
 
-func (r *JobRepositoryImpl) SaveJob(tx *gorm.DB, req entitypayloads.JobResponse) (bool, *exceptions.BaseErrorResponse) {
+func (r *JobRepositoryImpl) SaveJob(tx *gorm.DB, req entitypayloads.JobPayload) (bool, *exceptions.BaseErrorResponse) {
 	entities := entities.Job{
 		JobCode:        req.JobCode,
-		BrandId:        req.BrandId,
-		DealerId:       req.DealerId,
-		TopId:          req.TopId,
-		JobDateFrom:    req.JobDateFrom,
-		JobDateTo:      req.JobDateTo,
-		JobRemark:      req.JobRemark,
-		ProfitCenterId: req.ProfitCenterId,
-		IsActive:       req.IsActive,
 		JobId:          req.JobId,
-		CustomerId:     req.CustomerId,
+		EmployerId:     req.EmployerId,
+		JobPostDate:    req.JobPostDate,
+		CompanyId:      req.CompanyId,
+		JobTitle:       req.JobTitle,
+		JobDescription: req.JobDescription,
+		JobLevel:       req.JobLevel,
+		JobVacancy:     req.JobVacancy,
+		ActiveStatus:   req.ActiveStatus,
 	}
 
 	err := tx.Save(&entities).Error
@@ -95,10 +83,10 @@ func (r *JobRepositoryImpl) ChangeStatusJob(tx *gorm.DB, Id int) (bool, *excepti
 		}
 	}
 
-	if entities.IsActive {
-		entities.IsActive = false
+	if entities.ActiveStatus {
+		entities.ActiveStatus = false
 	} else {
-		entities.IsActive = true
+		entities.ActiveStatus = true
 	}
 
 	result = tx.Save(&entities)
@@ -114,37 +102,36 @@ func (r *JobRepositoryImpl) ChangeStatusJob(tx *gorm.DB, Id int) (bool, *excepti
 }
 
 func (r *JobRepositoryImpl) GetJobList(tx *gorm.DB, filterCondition []utils.FilterCondition, pages pagination.Pagination) (pagination.Pagination, *exceptions.BaseErrorResponse) {
-	entities := entities.Job{}
-	var responses []entitypayloads.JobPayload
+	JobMapping := []entities.Job{}
+	JobResponse := []entitypayloads.JobPayload{}
+	query := tx.
+		Model(entities.Job{}).
+		Scan(&JobResponse)
 
-	// define table struct
-	tableStruct := entitypayloads.JobPayload{}
+	ApplyFilter := utils.ApplyFilter(query, filterCondition)
 
-	//join table
-	joinTable := utils.CreateJoinSelectStatement(tx, tableStruct)
+	err := ApplyFilter.
+		Scopes(pagination.Paginate(&JobMapping, &pages, ApplyFilter)).
+		// Order("").
+		Scan(&JobResponse).
+		Error
 
-	//apply filter
-	whereQuery := utils.ApplyFilter(joinTable, filterCondition)
-	//apply pagination and execute
-	rows, err := joinTable.Scopes(pagination.Paginate(&entities, &pages, whereQuery)).Scan(&responses).Rows()
-
-	if err != nil {
-		return pages, &exceptions.BaseErrorResponse{
-			StatusCode: http.StatusInternalServerError,
-			Err:        err,
-		}
-	}
-
-	if len(responses) == 0 {
+	if len(JobResponse) == 0 {
 		return pages, &exceptions.BaseErrorResponse{
 			StatusCode: http.StatusNotFound,
 			Err:        err,
 		}
 	}
 
-	defer rows.Close()
+	if err != nil {
 
-	pages.Rows = responses
+		return pages, &exceptions.BaseErrorResponse{
+			StatusCode: http.StatusInternalServerError,
+			Err:        err,
+		}
+	}
+	// defer row.Close()
+	pages.Rows = JobResponse
 
 	return pages, nil
 }

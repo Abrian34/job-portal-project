@@ -2,14 +2,14 @@ package securities
 
 import (
 	"fmt"
-	"job-portal-project/api/entitypayloads"
+	payloads "job-portal-project/api/payloads"
 	"net/http"
 	"strconv"
 
 	"github.com/golang-jwt/jwt/v4"
 )
 
-func ExtractAuthToken(w http.ResponseWriter, r *http.Request) (*entitypayloads.UserDetail, error) {
+func ExtractAuthToken(w http.ResponseWriter, r *http.Request) (*payloads.UserDetail, error) {
 	token, err := VerifyToken(r)
 	if err != nil {
 		return nil, err
@@ -29,7 +29,7 @@ func ExtractAuthToken(w http.ResponseWriter, r *http.Request) (*entitypayloads.U
 		roles, _ := strconv.Atoi(role)
 		userIDs, _ := strconv.Atoi(userId)
 
-		authDetail := entitypayloads.UserDetail{
+		authDetail := payloads.UserDetail{
 			UserId:      int32(userIDs),
 			Username:    username,
 			Authorize:   authorized,

@@ -12,5 +12,5 @@ type JobPayload struct {
 	JobDescription string    `json:"job_description"`
 	JobLevel       string    `json:"job_level"`
 	JobVacancy     string    `json:"job_vacancy"`
-	ActiveStatus   string    `json:"active_status"`
+	ActiveStatus   bool      `json:"active_status"`
 }
