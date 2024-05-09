@@ -3,7 +3,7 @@ package migration
 import (
 	"job-portal-project/api/config"
 
-	// entities "job-portal-project/api/entities"
+	entities "job-portal-project/api/entities"
 
 	//transactionworkshopentities "job-portal-project/api/entities/transaction/workshop"
 
@@ -59,70 +59,7 @@ func Migrate() {
 	// 	}, DisableForeignKeyConstraintWhenMigrating: false})
 
 	db.AutoMigrate( // sesuai urutan foreign key
-	// &masteroperationentities.OperationModelMapping{},
-	// &masteroperationentities.OperationFrt{},
-	// &masteroperationentities.OperationGroup{},
-	// &masteroperationentities.OperationSection{},
-	// &masteroperationentities.OperationKey{},
-	// &masteroperationentities.OperationEntries{},
-	// &masteroperationentities.OperationCode{},
-
-	// &masterwarehouseentities.WarehouseGroup{},
-	// &masterwarehouseentities.WarehouseMaster{},
-	// &masterwarehouseentities.WarehouseLocation{},
-	// &masterwarehouseentities.WarehouseLocationDefinition{},
-	// &masterwarehouseentities.WarehouseLocationDefinitionLevel{},
-
-	// &masteritementities.MarkupMaster{},
-	// &masteritementities.PrincipleBrandParent{},
-	// &masteritementities.UomType{},
-	// &masteritementities.PriceList{},
-	// &masteritementities.ItemLocationSource{},
-	// &masteritementities.ItemLocationDetail{},
-	// &masteritementities.ItemLocation{},
-	//&masteritementities.PurchasePrice{},
-	//&masteritementities.PurchasePriceDetail{},
-	// &masteritementities.ItemDetail{},
-	// &masteritementities.ItemImport{},
-	// &masteritementities.DiscountPercent{},
-	// &masteritementities.ItemSubstitute{},
-	// &masteritementities.ItemSubstituteDetail{},
-	// &masteritementities.ItemPackage{},
-	// &masteritementities.ItemPackageDetail{},
-	// &masteritementities.PrincipleBrandParent{},
-	// &masteritementities.UomType{},
-	// &masteritementities.Uom{},
-	//&masteritementities.Bom{},
-	//&masteritementities.BomDetail{},
-	// &masteritementities.ItemClass{},
-	// &masteritementities.Item{},
-	// &masteritementities.MarkupRate{},
-	// &masteritementities.ItemLevel{},
-
-	// &entities.IncentiveGroup{},
-	// &entities.ForecastMaster{},
-	// &entities.MovingCode{},
-	// &entities.ShiftSchedule{},
-	// &entities.IncentiveGroup{},
-	// &entities.ForecastMaster{},
-	// &entities.MovingCode{},
-	// &entities.ShiftSchedule{},
-	// &entities.IncentiveMaster{},
-	// &entities.IncentiveGroupDetail{},
-	// &entities.SkillLevel{},
-	// &entities.WarrantyFreeService{},
-	// &entities.DeductionList{},
-	// &entities.DeductionDetail{},
-	// &entities.FieldActionEligibleVehicleItem{},
-	// &entities.FieldActionEligibleVehicle{},
-	// &entities.FieldAction{},
-	// &entities.Discount{},
-
-	// &transactionentities.SupplySlip{},
-	// &transactionentities.SupplySlipDetail{},
-	// &transactionworkshopentities.WorkOrder{},
-	// &transactionentities.ServiceLog{},
-	// &transactionworkshopentities.BookingEstimation{},
+		&entities.Job{},
 	)
 
 	if db != nil && db.Error != nil {

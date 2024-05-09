@@ -10,8 +10,8 @@ import (
 )
 
 type JobRepository interface {
-	GetJobById(tx *gorm.DB, Id int) (entitypayloads.JobPayload, *exceptions.BaseErrorResponse)
-	SaveJob(tx *gorm.DB, req entitypayloads.JobPayload) (bool, *exceptions.BaseErrorResponse)
-	ChangeStatusJob(tx *gorm.DB, Id int) (bool, *exceptions.BaseErrorResponse)
-	GetJobList(tx *gorm.DB, filterCondition []utils.FilterCondition, pages pagination.Pagination) (pagination.Pagination, *exceptions.BaseErrorResponse)
+	GetJobById(*gorm.DB, int) (entitypayloads.JobPayload, *exceptions.BaseErrorResponse)
+	SaveJob(*gorm.DB, entitypayloads.JobPayload) (bool, *exceptions.BaseErrorResponse)
+	ChangeStatusJob(*gorm.DB, int) (bool, *exceptions.BaseErrorResponse)
+	GetJobList(*gorm.DB, []utils.FilterCondition, pagination.Pagination) (pagination.Pagination, *exceptions.BaseErrorResponse)
 }

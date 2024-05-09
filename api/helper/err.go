@@ -29,3 +29,9 @@ func ReturnError(writer http.ResponseWriter, request *http.Request, err *excepti
 		return
 	}
 }
+
+func PanicIfError(err error) {
+	if err != nil {
+		panic(err)
+	}
+}
