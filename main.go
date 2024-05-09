@@ -1,16 +1,16 @@
 package main
 
 import (
-	"job-portal/api/config"
-	route "job-portal/api/route"
-	migration "job-portal/generate/sql"
+	"job-portal-project/api/config"
+	route "job-portal-project/api/route"
+	migration "job-portal-project/generate/sql"
 	"os"
 )
 
-// @title DMS job-portal API
+// @title DMS job-portal-project API
 // @version v1
 // @license AGPLv3
-// @description This is a DMS job-portal API Server.
+// @description This is a DMS job-portal-project API Server.
 
 func main() {
 	args := os.Args

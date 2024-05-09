@@ -3,7 +3,7 @@ package utils
 import (
 	"bytes"
 	"encoding/json"
-	"job-portal/api/exceptions"
+	"job-portal-project/api/exceptions"
 	"net/http"
 )
 

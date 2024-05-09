@@ -1,8 +1,7 @@
 package migration
 
 import (
-	"job-portal/api/config"
-	masterwarehouseentities "job-portal/api/entities/master/warehouse"
+	"job-portal-project/api/config"
 	"log"
 
 	"fmt"
@@ -26,23 +25,21 @@ func MigrateGG() {
 	}
 
 	db.AutoMigrate( // sesuai urutan foreign key
-		// &masteroperationentities.OperationGroup{},
-		// &masteroperationentities.OperationSection{},
-		// &masteroperationentities.OperationKey{},
-		// &masteroperationentities.OperationModelMapping{},
-		// &masteroperationentities.OperationEntries{},
-		// &masteroperationentities.OperationCode{},
-		// &masteritementities.ItemClass{},
-		// &masteritementities.Item{},
+	// &masteroperationentities.OperationGroup{},
+	// &masteroperationentities.OperationSection{},
+	// &masteroperationentities.OperationKey{},
+	// &masteroperationentities.OperationModelMapping{},
+	// &masteroperationentities.OperationEntries{},
+	// &masteroperationentities.OperationCode{},
+	// &masteritementities.ItemClass{},
+	// &masteritementities.Item{},
 
-		// &transactionentities.SupplySlip{},
-		// &transactionentities.SupplySlipDetail{},
-		// &transactionentities.WorkOrderItem{},
-		// &transactionentities.WorkOrderOperation{},
-		// &transactionentities.ServiceLog{},
-		// &transactionworkshopentities.BookingEstimation{},
-		&masterwarehouseentities.WarehouseGroup{},
-		&masterwarehouseentities.WarehouseMaster{},
+	// &transactionentities.SupplySlip{},
+	// &transactionentities.SupplySlipDetail{},
+	// &transactionentities.WorkOrderItem{},
+	// &transactionentities.WorkOrderOperation{},
+	// &transactionentities.ServiceLog{},
+	// &transactionworkshopentities.BookingEstimation{},
 	)
 
 	fmt.Println("Migration Process Success...")

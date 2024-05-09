@@ -2,7 +2,7 @@ package entities
 
 import "time"
 
-var CreateJobTable = "job_tbl"
+var CreateJobApplicationTabel = "job_application_tbl"
 
 type Job struct {
 	JobId          int       `gorm:"column:job_id;size:30;not null;primaryKey" json:"job_id"`
@@ -18,5 +18,5 @@ type Job struct {
 }
 
 func (*Job) TableName() string {
-	return CreateJobTable
+	return CreateJobApplicationTabel
 }

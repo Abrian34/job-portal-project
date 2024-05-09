@@ -1,8 +1,8 @@
 package exceptions
 
 import (
-	jsonresponse "after-sales/api/helper/json/json-response"
-	"after-sales/api/utils"
+	jsonresponse "job-portal-project/api/helper/json/json-response"
+	"job-portal-project/api/utils/constant"
 	"net/http"
 
 	"github.com/sirupsen/logrus"
@@ -20,7 +20,7 @@ type BaseErrorResponse struct {
 func NewAppException(writer http.ResponseWriter, request *http.Request, err *BaseErrorResponse) {
 	statusCode := http.StatusInternalServerError
 	if err.Message == "" {
-		err.Message = utils.SomethingWrong
+		err.Message = constant.SomethingWrong
 	}
 	if err.Err != nil {
 		logrus.Info(err)
@@ -39,7 +39,7 @@ func NewAppException(writer http.ResponseWriter, request *http.Request, err *Bas
 func NewAuthorizationException(writer http.ResponseWriter, request *http.Request, err *BaseErrorResponse) {
 	statusCode := http.StatusUnauthorized
 	if err.Message == "" {
-		err.Message = utils.SessionError
+		err.Message = constant.SessionError
 	}
 	if err.Err != nil {
 		logrus.Info(err)
@@ -58,7 +58,7 @@ func NewBadRequestException(writer http.ResponseWriter, request *http.Request, e
 	statusCode := http.StatusBadRequest
 
 	if err.Message == "" {
-		err.Message = utils.BadRequestError
+		err.Message = constant.BadRequestError
 	}
 	if err.Err != nil {
 		logrus.Info(err)
@@ -77,7 +77,7 @@ func NewBadRequestException(writer http.ResponseWriter, request *http.Request, e
 func NewConflictException(writer http.ResponseWriter, request *http.Request, err *BaseErrorResponse) {
 	statusCode := http.StatusConflict
 	if err.Message == "" {
-		err.Message = utils.DataExists
+		err.Message = constant.DataExists
 	}
 	if err.Err != nil {
 		logrus.Info(err)
@@ -95,7 +95,7 @@ func NewConflictException(writer http.ResponseWriter, request *http.Request, err
 func NewEntityException(writer http.ResponseWriter, request *http.Request, err *BaseErrorResponse) {
 	statusCode := http.StatusUnprocessableEntity
 	if err.Message == "" {
-		err.Message = utils.JsonError
+		err.Message = constant.JsonError
 	}
 	if err.Err != nil {
 		logrus.Info(err)
@@ -114,7 +114,7 @@ func NewEntityException(writer http.ResponseWriter, request *http.Request, err *
 func NewNotFoundException(writer http.ResponseWriter, request *http.Request, err *BaseErrorResponse) {
 	statusCode := http.StatusNotFound
 	if err.Message == "" {
-		err.Message = utils.GetDataNotFound
+		err.Message = constant.GetDataNotFound
 	}
 	if err.Err != nil {
 		logrus.Info(err)
@@ -133,7 +133,7 @@ func NewRoleException(writer http.ResponseWriter, request *http.Request, err *Ba
 	statusCode := http.StatusForbidden
 
 	if err.Message == "" {
-		err.Message = utils.PermissionError
+		err.Message = constant.PermissionError
 	}
 	if err.Err != nil {
 		logrus.Info(err)

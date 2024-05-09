@@ -2,7 +2,7 @@ package migration
 
 import (
 	"fmt"
-	"job-portal/api/config"
+	"job-portal-project/api/config"
 
 	"gorm.io/driver/sqlserver"
 	"gorm.io/gen"

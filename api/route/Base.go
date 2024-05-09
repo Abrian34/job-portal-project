@@ -1,14 +1,14 @@
 package route
 
 import (
-	mastercontroller "job-portal/api/controllers/master"
-	masteritemcontroller "job-portal/api/controllers/master/item"
-	masteroperationcontroller "job-portal/api/controllers/master/operation"
-	masterwarehousecontroller "job-portal/api/controllers/master/warehouse"
-	transactionworkshopcontroller "job-portal/api/controllers/transactions/workshop"
-	"job-portal/api/middlewares"
+	mastercontroller "job-portal-project/api/controllers"
+	masteritemcontroller "job-portal-project/api/controllers/item"
+	masteroperationcontroller "job-portal-project/api/controllers/operation"
+	masterwarehousecontroller "job-portal-project/api/controllers/warehouse"
+	transactionworkshopcontroller "job-portal-project/api/controllers/transactions/workshop"
+	"job-portal-project/api/middlewares"
 
-	// _ "job-portal/docs"
+	// _ "job-portal-project/docs"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
@@ -159,7 +159,7 @@ func ItemLocationRouter(
 	router.Use(middleware.Recoverer)
 	router.Use(middlewares.MetricsMiddleware)
 
-	//master
+	/
 	router.Get("/", ItemLocationController.GetAllItemLocation)
 	router.Get("/{item_location_id}", ItemLocationController.GetItemLocationById)
 	router.Post("/", ItemLocationController.SaveItemLocation)
@@ -334,7 +334,7 @@ func PurchasePriceRouter(
 	router.Use(middleware.Recoverer)
 	router.Use(middlewares.MetricsMiddleware)
 
-	//master
+	/
 	router.Get("/", PurchasePriceController.GetAllPurchasePrice)
 	router.Get("/by-id/{purchase_price_id}", PurchasePriceController.GetPurchasePriceById)
 	router.Post("/", PurchasePriceController.SavePurchasePrice)

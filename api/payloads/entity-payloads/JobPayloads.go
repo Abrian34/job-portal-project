@@ -1,4 +1,4 @@
-package masterpayloads
+package entitypayloads
 
 import "time"
 

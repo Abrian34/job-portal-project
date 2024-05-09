@@ -1,4 +1,4 @@
-module job-portal
+module job-portal-project
 
 go 1.21
 

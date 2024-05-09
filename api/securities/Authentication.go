@@ -3,7 +3,7 @@ package securities
 import (
 	"errors"
 	"fmt"
-	"job-portal/api/config"
+	"job-portal-project/api/config"
 	"net/http"
 	"strings"
 

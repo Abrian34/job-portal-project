@@ -1,16 +1,14 @@
 package masterrepositoryimpl
 
 import (
-	"after-sales/api/config"
-	masterentities "after-sales/api/entities/master"
-	exceptionsss_test "after-sales/api/expectionsss"
-	masterpayloads "after-sales/api/payloads/master"
-	"after-sales/api/payloads/pagination"
-	masterrepository "after-sales/api/repositories/master"
-	"after-sales/api/utils"
-	"fmt"
+	entities "job-portal-project/api/entities/job"
+	entitypayloads "job-portal-project/api/entitypayloads"
+	exceptions "job-portal-project/api/exceptions"
+
+	// "job-portal-project/api/entitypayloads/pagination"
+	// masterrepository "job-portal-project/api/repositories"
+	"job-portal-project/api/utils"
 	"net/http"
-	"strconv"
 
 	"gorm.io/gorm"
 )
@@ -22,19 +20,19 @@ func StartJobRepositoryImpl() masterrepository.JobRepository {
 	return &JobRepositoryImpl{}
 }
 
-func (r *JobRepositoryImpl) GetJobById(tx *gorm.DB, JobId int) (masterpayloads.JobPayload, *exceptionsss_test.BaseErrorResponse) {
-	entities := masterentities.Job{}
-	response := masterpayloads.JobPayload{}
+func (r *JobRepositoryImpl) GetJobById(tx *gorm.DB, JobId int) (entitypayloads.JobPayload, *exceptions.BaseErrorResponse) {
+	entities := entities.Job{}
+	response := entitypayloads.JobPayload{}
 
 	err := tx.Model(&entities).
-		Where(masterentities.Job{
+		Where(entities.Job{
 			JobId: JobId,
 		}).
 		First(&entities).
 		Error
 
 	if err != nil {
-		return response, &exceptionsss_test.BaseErrorResponse{
+		return response, &exceptions.BaseErrorResponse{
 			StatusCode: http.StatusInternalServerError,
 			Err:        err,
 		}
@@ -56,25 +54,25 @@ func (r *JobRepositoryImpl) GetJobById(tx *gorm.DB, JobId int) (masterpayloads.J
 	return response, nil
 }
 
-func (r *JobRepositoryImpl) SaveJob(tx *gorm.DB, req masterpayloads.JobResponse) (bool, *exceptionsss_test.BaseErrorResponse) {
-	entities := masterentities.Job{
-		JobCode:     req.JobCode,
-		BrandId:           req.BrandId,
-		DealerId:          req.DealerId,
-		TopId:             req.TopId,
-		JobDateFrom: req.JobDateFrom,
-		JobDateTo:   req.JobDateTo,
-		JobRemark:   req.JobRemark,
-		ProfitCenterId:    req.ProfitCenterId,
-		IsActive:          req.IsActive,
-		JobId:       req.JobId,
-		CustomerId:        req.CustomerId,
+func (r *JobRepositoryImpl) SaveJob(tx *gorm.DB, req entitypayloads.JobResponse) (bool, *exceptions.BaseErrorResponse) {
+	entities := entities.Job{
+		JobCode:        req.JobCode,
+		BrandId:        req.BrandId,
+		DealerId:       req.DealerId,
+		TopId:          req.TopId,
+		JobDateFrom:    req.JobDateFrom,
+		JobDateTo:      req.JobDateTo,
+		JobRemark:      req.JobRemark,
+		ProfitCenterId: req.ProfitCenterId,
+		IsActive:       req.IsActive,
+		JobId:          req.JobId,
+		CustomerId:     req.CustomerId,
 	}
 
 	err := tx.Save(&entities).Error
 
 	if err != nil {
-		return false, &exceptionsss_test.BaseErrorResponse{
+		return false, &exceptions.BaseErrorResponse{
 			StatusCode: http.StatusInternalServerError,
 			Err:        err,
 		}
@@ -83,15 +81,15 @@ func (r *JobRepositoryImpl) SaveJob(tx *gorm.DB, req masterpayloads.JobResponse)
 	return true, nil
 }
 
-func (r *JobRepositoryImpl) ChangeStatusJob(tx *gorm.DB, Id int) (bool, *exceptionsss_test.BaseErrorResponse) {
-	var entities masterentities.Job
+func (r *JobRepositoryImpl) ChangeStatusJob(tx *gorm.DB, Id int) (bool, *exceptions.BaseErrorResponse) {
+	var entities entities.Job
 
 	result := tx.Model(&entities).
 		Where("Job_id = ?", Id).
 		First(&entities)
 
 	if result.Error != nil {
-		return false, &exceptionsss_test.BaseErrorResponse{
+		return false, &exceptions.BaseErrorResponse{
 			StatusCode: http.StatusInternalServerError,
 			Err:        result.Error,
 		}
@@ -106,7 +104,7 @@ func (r *JobRepositoryImpl) ChangeStatusJob(tx *gorm.DB, Id int) (bool, *excepti
 	result = tx.Save(&entities)
 
 	if result.Error != nil {
-		return false, &exceptionsss_test.BaseErrorResponse{
+		return false, &exceptions.BaseErrorResponse{
 			StatusCode: http.StatusInternalServerError,
 			Err:        result.Error,
 		}
@@ -115,12 +113,12 @@ func (r *JobRepositoryImpl) ChangeStatusJob(tx *gorm.DB, Id int) (bool, *excepti
 	return true, nil
 }
 
-func (r *JobRepositoryImpl) GetJobList(tx *gorm.DB, filterCondition []utils.FilterCondition, pages pagination.Pagination) (pagination.Pagination, *exceptionsss_test.BaseErrorResponse) {
-	entities := masterentities.Job{}
-	var responses []masteroperationpayloads.JobPayload
+func (r *JobRepositoryImpl) GetJobList(tx *gorm.DB, filterCondition []utils.FilterCondition, pages pagination.Pagination) (pagination.Pagination, *exceptions.BaseErrorResponse) {
+	entities := entities.Job{}
+	var responses []entitypayloads.JobPayload
 
 	// define table struct
-	tableStruct := masteroperationpayloads.JobPayload{}
+	tableStruct := entitypayloads.JobPayload{}
 
 	//join table
 	joinTable := utils.CreateJoinSelectStatement(tx, tableStruct)
@@ -131,14 +129,14 @@ func (r *JobRepositoryImpl) GetJobList(tx *gorm.DB, filterCondition []utils.Filt
 	rows, err := joinTable.Scopes(pagination.Paginate(&entities, &pages, whereQuery)).Scan(&responses).Rows()
 
 	if err != nil {
-		return pages, &exceptionsss_test.BaseErrorResponse{
+		return pages, &exceptions.BaseErrorResponse{
 			StatusCode: http.StatusInternalServerError,
 			Err:        err,
 		}
 	}
 
 	if len(responses) == 0 {
-		return pages, &exceptionsss_test.BaseErrorResponse{
+		return pages, &exceptions.BaseErrorResponse{
 			StatusCode: http.StatusNotFound,
 			Err:        err,
 		}

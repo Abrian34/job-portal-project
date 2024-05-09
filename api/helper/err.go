@@ -1,7 +1,7 @@
 package helper
 
 import (
-	exceptions "after-sales/api/expectionsss"
+	exceptions "job-portal-project/api/exceptions"
 	"net/http"
 )
 

@@ -1,9 +1,9 @@
 package jsonresponse
 
 import (
-	"after-sales/api/utils"
 	"encoding/json"
 	"errors"
+	"job-portal-project/api/utils/constant"
 	"net/http"
 )
 
@@ -12,7 +12,7 @@ func WriteToResponseBody(writer http.ResponseWriter, response interface{}) error
 	encoder := json.NewEncoder(writer)
 	err := encoder.Encode(response)
 	if err != nil {
-		return errors.New(utils.JsonError)
+		return errors.New(constant.JsonError)
 	}
 	return nil
 }
