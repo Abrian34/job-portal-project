@@ -32,10 +32,7 @@ func Generate() {
 	//g.ApplyInterface(func() {}, model.UserDetail{})
 
 	// // Generate the code
-	//g.GenerateModel("gmUBrand")
-	g.GenerateModel("umvehicle6")
-	//g.GenerateModel("gmUVariant0")
-	//g.GenerateModel("gmUColour")
+	g.GenerateModel("job")
 	g.Execute()
 
 }

@@ -1,13 +1,13 @@
 package config
 
 import (
-	"context"
+	// "context"
 	"fmt"
 	"net/url"
 	"strings"
 	"time"
 
-	"github.com/redis/go-redis/v9"
+	// "github.com/redis/go-redis/v9"
 	log "github.com/sirupsen/logrus"
 	"gorm.io/driver/postgres"
 	"gorm.io/driver/sqlserver"
@@ -62,20 +62,20 @@ func InitDB() *gorm.DB {
 	return db
 }
 
-func InitRedis() *redis.Client {
-	rdb := redis.NewClient(&redis.Options{
-		Addr:     EnvConfigs.ClientRedis + ":" + EnvConfigs.PortRedis,
-		Password: "",
-		DB:       0,
-	})
+// func InitRedis() *redis.Client {
+// 	rdb := redis.NewClient(&redis.Options{
+// 		Addr:     EnvConfigs.ClientRedis + ":" + EnvConfigs.PortRedis,
+// 		Password: "",
+// 		DB:       0,
+// 	})
 
-	// Menguji koneksi Redis
-	_, err := rdb.Ping(context.Background()).Result()
-	if err != nil {
-		log.Fatalf("Failed to connect to Redis: %v", err)
-	}
+// 	// Menguji koneksi Redis
+// 	_, err := rdb.Ping(context.Background()).Result()
+// 	if err != nil {
+// 		log.Fatalf("Failed to connect to Redis: %v", err)
+// 	}
 
-	log.Info("Connected Redis -- running in -- " + EnvConfigs.ClientRedis + ":" + EnvConfigs.PortRedis)
+// 	log.Info("Connected Redis -- running in -- " + EnvConfigs.ClientRedis + ":" + EnvConfigs.PortRedis)
 
-	return rdb
-}
+// 	return rdb
+// }

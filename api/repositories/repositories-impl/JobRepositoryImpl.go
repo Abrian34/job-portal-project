@@ -1,4 +1,4 @@
-package masterrepositoryimpl
+package repositoryimpl
 
 import (
 	entities "job-portal-project/api/entities"

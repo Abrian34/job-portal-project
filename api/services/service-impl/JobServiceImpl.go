@@ -9,21 +9,20 @@ import (
 	service "job-portal-project/api/services"
 	"job-portal-project/api/utils"
 
-	"github.com/redis/go-redis/v9"
+	// "github.com/redis/go-redis/v9"
 	"gorm.io/gorm"
 )
 
 type JobServiceImpl struct {
 	JobRepository repository.JobRepository
 	DB            *gorm.DB
-	RedisClient   *redis.Client // Redis client
+	// RedisClient   *redis.Client // Redis client
 }
 
-func StartJobService(JobRepository repository.JobRepository, db *gorm.DB, redisClient *redis.Client) service.JobService {
+func StartJobService(JobRepository repository.JobRepository, db *gorm.DB) service.JobService {
 	return &JobServiceImpl{
 		JobRepository: JobRepository,
 		DB:            db,
-		RedisClient:   redisClient,
 	}
 }
 

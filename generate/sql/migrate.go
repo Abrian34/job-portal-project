@@ -12,7 +12,7 @@ import (
 	"fmt"
 	"log"
 
-	"gorm.io/driver/sqlserver"
+	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
 	"gorm.io/gorm/schema"
@@ -22,15 +22,7 @@ func Migrate() {
 	config.InitEnvConfigs(false, "")
 	logEntry := "Auto Migrating..."
 
-	dsn := fmt.Sprintf(
-		`%s://%s:%s@%s:%v?database=%s`,
-		config.EnvConfigs.DBDriver,
-		config.EnvConfigs.DBUser,
-		config.EnvConfigs.DBPass,
-		config.EnvConfigs.DBHost,
-		config.EnvConfigs.DBPort,
-		config.EnvConfigs.DBName,
-	)
+	dsn := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%d sslmode=disable TimeZone=Asia/Shanghai", config.EnvConfigs.DBHost, config.EnvConfigs.DBUser, config.EnvConfigs.DBPass, config.EnvConfigs.DBName, config.EnvConfigs.DBPort)
 
 	//init logger
 	newLogger := logger.New(
@@ -43,7 +35,7 @@ func Migrate() {
 	)
 
 	//constraint foreign key tidak akan ke create jika DisableForeignKeyConstraintWhenMigrating: true
-	db, err := gorm.Open(sqlserver.Open(dsn), &gorm.Config{
+	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{
 		Logger: newLogger, // Set the logger for GORM
 		NamingStrategy: schema.NamingStrategy{
 			//TablePrefix:   "dbo.", // schema name

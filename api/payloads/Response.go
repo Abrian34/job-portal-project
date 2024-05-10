@@ -1,10 +1,19 @@
 package payloads
 
 import (
-	"encoding/json"
 	jsonresponse "job-portal-project/api/helper/json/json-response"
 	"net/http"
+
+	"encoding/json"
+	"job-portal-project/api/helper"
 )
+
+type ResponseAuth struct {
+	Token   string `json:"token"`
+	UserID  int    `json:"user_id"`
+	Role    int    `json:"role"`
+	Company int    `json:"company"`
+}
 
 type Response struct {
 	StatusCode int         `json:"status_code"`
@@ -22,12 +31,20 @@ type ResponsePagination struct {
 	Data       interface{} `json:"data"`
 }
 
-// ErrorResponse represents the structure of an error response
 type ErrorResponse struct {
 	Error string `json:"error"`
 }
 
-// NewHandleError creates and returns a new error response
+func HandleSuccess(writer http.ResponseWriter, data interface{}, message string, status int) {
+	res := Response{
+		StatusCode: status,
+		Message:    message,
+		Data:       data,
+	}
+
+	jsonresponse.WriteToResponseBody(writer, res)
+}
+
 func NewHandleError(writer http.ResponseWriter, errorMessage string, statusCode int) {
 	response := Response{
 		StatusCode: statusCode,
@@ -50,7 +67,7 @@ func NewHandleSuccess(writer http.ResponseWriter, data interface{}, message stri
 		Data:       data,
 	}
 
-	jsonresponse.WriteToResponseBody(writer, res)
+	helper.WriteToResponseBody(writer, res)
 }
 
 func NewHandleSuccessPagination(writer http.ResponseWriter, data interface{}, message string, status int, limit int, page int, totalRows int64, totalPages int) {
@@ -64,5 +81,5 @@ func NewHandleSuccessPagination(writer http.ResponseWriter, data interface{}, me
 		Data:       data,
 	}
 
-	jsonresponse.WriteToResponseBody(writer, res)
+	helper.WriteToResponseBody(writer, res)
 }

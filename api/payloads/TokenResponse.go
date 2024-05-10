@@ -1,24 +1,20 @@
 package payloads
 
 import (
-	"encoding/json"
+	jsonresponse "job-portal-project/api/helper/json/json-response"
 	"net/http"
 )
 
-type ResponseAuth struct {
-	Status  int    `json:"status"`
-	Message string `json:"message"`
-	Token   string `json:"token"`
-}
-
-func WriteResponseToken(w http.ResponseWriter, message string, token string, status int) {
-	res := ResponseAuth{
-		Status:  status,
-		Message: message,
-		Token:   token,
+func ResponseToken(writer http.ResponseWriter, data interface{}, message string, statusCode int) error {
+	res := Response{
+		StatusCode: statusCode,
+		Message:    message,
+		Data:       data,
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(status)
-	json.NewEncoder(w).Encode(res)
+	err := jsonresponse.WriteToResponseBody(writer, res)
+	if err != nil {
+		return err
+	}
+	return nil
 }

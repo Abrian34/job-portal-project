@@ -6,7 +6,6 @@ import (
 
 	logging "log"
 
-	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 	"gorm.io/gorm"
@@ -45,19 +44,11 @@ func InitEnvConfigs(gen bool, env string) {
 
 func SetupConfiguration(gen bool, env string) (config *setupDatabase) {
 	// Tell viper the path/location of your env file. If it is root just add "."
-	if env == "prod" {
-		gin.SetMode(gin.ReleaseMode)
-		if gen {
-			viper.AddConfigPath("../../.production")
-		} else {
-			viper.AddConfigPath(".production")
-		}
+
+	if gen {
+		viper.AddConfigPath("../../../.development")
 	} else {
-		if gen {
-			viper.AddConfigPath("../../../.development")
-		} else {
-			viper.AddConfigPath("./.development")
-		}
+		viper.AddConfigPath("./.development")
 	}
 
 	// Tell viper the name of your file

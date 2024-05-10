@@ -1,4 +1,4 @@
-package mastercontroller
+package controller
 
 import (
 	exceptions "job-portal-project/api/exceptions"

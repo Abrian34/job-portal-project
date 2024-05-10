@@ -2,45 +2,44 @@ package securities
 
 import (
 	"fmt"
-	payloads "job-portal-project/api/payloads"
+	"job-portal-project/api/payloads"
 	"net/http"
 	"strconv"
 
 	"github.com/golang-jwt/jwt/v4"
 )
 
-func ExtractAuthToken(w http.ResponseWriter, r *http.Request) (*payloads.UserDetail, error) {
-	token, err := VerifyToken(r)
+func ExtractAuthToken(request *http.Request) (*payloads.UserDetail, error) {
+	token, err := VerifyToken(request)
 	if err != nil {
 		return nil, err
 	}
-
 	claims, ok := token.Claims.(jwt.MapClaims)
 
 	if ok && token.Valid {
-		userId := fmt.Sprintf("%v", claims["user_id"])
+		userID := fmt.Sprintf("%v", claims["user_id"])
 		username := fmt.Sprintf("%s", claims["username"])
 		authorized := fmt.Sprintf("%s", claims["authorized"])
 		role := fmt.Sprintf("%v", claims["role"])
-		companyCode := fmt.Sprintf("%s", claims["company_code"])
+		companyID := fmt.Sprintf("%s", claims["company_id"])
 		ipAddress := fmt.Sprintf("%s", claims["ip_address"])
 		client := fmt.Sprintf("%s", claims["client"])
 
 		roles, _ := strconv.Atoi(role)
-		userIDs, _ := strconv.Atoi(userId)
+		userIDs, _ := strconv.Atoi(userID)
 
 		authDetail := payloads.UserDetail{
-			UserId:      int32(userIDs),
-			Username:    username,
-			Authorize:   authorized,
-			Role:        uint16(roles),
-			CompanyCode: companyCode,
-			Client:      client,
-			IpAddress:   ipAddress,
+			UserID:    int(userIDs),
+			Username:  username,
+			Authorize: authorized,
+			Role:      roles,
+			CompanyID: companyID,
+			Client:    client,
+			IpAddress: ipAddress,
 		}
 
 		return &authDetail, nil
 	}
 
-	return nil, fmt.Errorf("invalid token")
+	return nil, nil
 }
