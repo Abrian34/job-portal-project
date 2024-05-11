@@ -25,17 +25,35 @@ type LoginCredential struct {
 }
 
 type UserDetail struct {
-	UserID    int    `json:"user_id"`
-	Username  string `json:"username"`
-	Authorize string `json:"authorized"`
-	CompanyID string `json:"company_id"`
-	Role      int    `json:"role"`
-	IpAddress string `json:"ip_address"`
-	Client    string `json:"client"`
+	UserId          int    `json:"user_id"`
+	UserCode        string `json:"user_code"`
+	UserDisplayName string `json:"user_display_name"`
+	RoleId          int    `json:"role_id"`
+	RoleName        string `json:"role_name"`
+	UserName        string `json:"username"`
+	UserPassword    string `json:"user_password" `
+	ActiveStatus    bool   `json:"active_status"`
 }
 
 type CurrentUserResponse struct {
 	UserID   int    `json:"user_id"`
 	Username string `json:"username"`
 	Name     string `json:"name"`
+}
+
+type RoleResponse struct {
+	RoleId      int                `json:"role_id"`
+	RoleName    string             `json:"role_name"`
+	Permissions []PermissionDetail `json:"permissions"`
+}
+
+type PermissionDetail struct {
+	PermissionId   int    `json:"permission_id"`
+	PermissionName string `json:"permission_name"`
+}
+
+type LoginResponse struct {
+	User        UserDetail         `json:"user"`
+	Permissions []PermissionDetail `json:"permissions"`
+	Token       string             `json:"token"`
 }

@@ -3,6 +3,8 @@ package securities
 import (
 	"errors"
 	"fmt"
+	"job-portal-project/api/config"
+	"job-portal-project/api/utils/constant"
 
 	// redisservices "job-portal-project/api/services/redis"
 
@@ -11,46 +13,33 @@ import (
 	"net/http"
 
 	"github.com/golang-jwt/jwt/v4"
-	"github.com/spf13/viper"
 )
 
-// func GetAuthentication(request *http.Request, service redisservices.RedisService) error {
-// 	token, err := VerifyToken(request)
-// 	if err != nil {
-// 		return errors.New(constant.SessionError)
-// 	}
-// 	_, ok := token.Claims.(jwt.Claims)
+func GetAuthentication(request *http.Request) error {
+	token, err := VerifyToken(request)
+	if err != nil {
+		return errors.New(constant.SessionError)
+	}
+	_, ok := token.Claims.(jwt.Claims)
 
-// 	claims, _ := token.Claims.(jwt.MapClaims)
-// 	userID := fmt.Sprintf("%v", claims["user_id"])
-// 	client := fmt.Sprintf("%v", claims["client"])
+	if !ok && !token.Valid {
+		return errors.New(constant.SessionError)
+	}
 
-// 	id, _ := strconv.Atoi(userID)
-// 	session, errs := service.GetSession(id)
-// 	if errs != nil {
-// 		return errors.New(constant.SessionError)
-// 	}
-// 	if client != session {
-// 		return errors.New(constant.SessionError)
-// 	}
-
-// 	if !ok && !token.Valid {
-// 		return errors.New(constant.SessionError)
-// 	}
-
-// 	return nil
-// }
+	return nil
+}
 
 func VerifyToken(request *http.Request) (*jwt.Token, error) {
 	tokenString := ExtractToken(request)
 	if tokenString == "" {
 		return nil, errors.New("session invalid, please re-login")
 	}
+	secretKey := config.EnvConfigs.JWTKey
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
 		}
-		return []byte(viper.GetString("secret_key")), nil
+		return []byte(secretKey), nil
 	})
 	if err != nil {
 		return nil, errors.New("session invalid, please re-login")

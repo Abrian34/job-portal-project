@@ -1,45 +1,46 @@
 package securities
 
 import (
-	"fmt"
+	"job-portal-project/api/exceptions"
 	"job-portal-project/api/payloads"
 	"net/http"
-	"strconv"
 
 	"github.com/golang-jwt/jwt/v4"
 )
 
-func ExtractAuthToken(request *http.Request) (*payloads.UserDetail, error) {
+func ExtractAuthToken(request *http.Request) (*payloads.UserDetail, *exceptions.BaseErrorResponse) {
 	token, err := VerifyToken(request)
 	if err != nil {
-		return nil, err
+		return nil, &exceptions.BaseErrorResponse{
+			StatusCode: http.StatusInternalServerError,
+			Err:        err,
+		}
 	}
 	claims, ok := token.Claims.(jwt.MapClaims)
-
-	if ok && token.Valid {
-		userID := fmt.Sprintf("%v", claims["user_id"])
-		username := fmt.Sprintf("%s", claims["username"])
-		authorized := fmt.Sprintf("%s", claims["authorized"])
-		role := fmt.Sprintf("%v", claims["role"])
-		companyID := fmt.Sprintf("%s", claims["company_id"])
-		ipAddress := fmt.Sprintf("%s", claims["ip_address"])
-		client := fmt.Sprintf("%s", claims["client"])
-
-		roles, _ := strconv.Atoi(role)
-		userIDs, _ := strconv.Atoi(userID)
-
-		authDetail := payloads.UserDetail{
-			UserID:    int(userIDs),
-			Username:  username,
-			Authorize: authorized,
-			Role:      roles,
-			CompanyID: companyID,
-			Client:    client,
-			IpAddress: ipAddress,
+	if !ok || !token.Valid {
+		return nil, &exceptions.BaseErrorResponse{
+			StatusCode: http.StatusInternalServerError,
+			Err:        err,
 		}
-
-		return &authDetail, nil
 	}
 
-	return nil, nil
+	userID := int(claims["user_id"].(float64))
+	username := claims["username"].(string)
+	userCode := claims["user_code"].(string)
+	userDisplayName := claims["user_display_name"].(string)
+	roleId := int(claims["role_id"].(float64))
+	roleName := claims["role_name"].(string)
+	activeStatus := claims["active_status"].(bool)
+
+	userDetail := payloads.UserDetail{
+		UserId:          userID,
+		UserName:        username,
+		UserCode:        userCode,
+		UserDisplayName: userDisplayName,
+		RoleId:          roleId,
+		RoleName:        roleName,
+		ActiveStatus:    activeStatus,
+	}
+
+	return &userDetail, nil
 }

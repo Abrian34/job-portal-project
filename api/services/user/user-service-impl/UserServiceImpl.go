@@ -1,12 +1,12 @@
 package userserviceimpl
 
 import (
-	masterentities "user-services/api/entities/master"
-	"user-services/api/exceptions"
-	"user-services/api/helper"
-	"user-services/api/payloads"
-	userrepo "user-services/api/repositories/user"
-	userservices "user-services/api/services/user"
+	entities "job-portal-project/api/entities"
+	"job-portal-project/api/exceptions"
+	"job-portal-project/api/helper"
+	"job-portal-project/api/payloads"
+	userrepo "job-portal-project/api/repositories/user"
+	userservices "job-portal-project/api/services/user"
 
 	"github.com/go-playground/validator/v10"
 	"gorm.io/gorm"
@@ -66,30 +66,30 @@ func (service *UserServiceImpl) FindUser(username string) (payloads.UserDetails,
 }
 
 // GetEmails implements services.UserService.
-func (service *UserServiceImpl) GetEmails(users []int) ([]string, *exceptions.BaseErrorResponse) {
-	tx := service.DB.Begin()
-	defer helper.CommitOrRollback(tx)
-	get, err := service.UserRepository.GetEmails(tx, users)
+// func (service *UserServiceImpl) GetEmails(users []int) ([]string, *exceptions.BaseErrorResponse) {
+// 	tx := service.DB.Begin()
+// 	defer helper.CommitOrRollback(tx)
+// 	get, err := service.UserRepository.GetEmails(tx, users)
 
-	if err != nil {
-		return get, err
-	}
+// 	if err != nil {
+// 		return get, err
+// 	}
 
-	return get, nil
-}
+// 	return get, nil
+// }
 
-// GetByEmail implements services.UserService.
-func (service *UserServiceImpl) GetByEmail(email string) (bool, *exceptions.BaseErrorResponse) {
-	tx := service.DB.Begin()
-	defer helper.CommitOrRollback(tx)
-	get, err := service.UserRepository.GetByEmail(tx, email)
+// // GetByEmail implements services.UserService.
+// func (service *UserServiceImpl) GetByEmail(email string) (bool, *exceptions.BaseErrorResponse) {
+// 	tx := service.DB.Begin()
+// 	defer helper.CommitOrRollback(tx)
+// 	get, err := service.UserRepository.GetByEmail(tx, email)
 
-	if err != nil {
-		return get, err
-	}
+// 	if err != nil {
+// 		return get, err
+// 	}
 
-	return get, nil
-}
+// 	return get, nil
+// }
 
 // GetUserIDByUsername implements services.UserService.
 func (service *UserServiceImpl) GetUserIDByUsername(username string) (int, *exceptions.BaseErrorResponse) {
@@ -118,7 +118,7 @@ func (service *UserServiceImpl) GetUsernameByUserID(userID int) (string, *except
 }
 
 // GetByID implements services.UserService.
-func (service *UserServiceImpl) GetByID(userID int) (masterentities.User, *exceptions.BaseErrorResponse) {
+func (service *UserServiceImpl) GetByID(userID int) (entities.User, *exceptions.BaseErrorResponse) {
 	tx := service.DB.Begin()
 	defer helper.CommitOrRollback(tx)
 
@@ -132,7 +132,7 @@ func (service *UserServiceImpl) GetByID(userID int) (masterentities.User, *excep
 }
 
 // GetUser implements services.UserService.
-func (service *UserServiceImpl) GetUser(username string) (masterentities.User, *exceptions.BaseErrorResponse) {
+func (service *UserServiceImpl) GetUser(username string) (payloads.UserDetail, *exceptions.BaseErrorResponse) {
 	tx := service.DB.Begin()
 	defer helper.CommitOrRollback(tx)
 	get, err := service.UserRepository.GetByUsername(tx, username)
@@ -156,7 +156,7 @@ func (service *UserServiceImpl) GetUserDetailByUsername(username string) (payloa
 }
 
 // ViewUser implements services.UserService.
-func (service *UserServiceImpl) ViewUser() ([]masterentities.User, *exceptions.BaseErrorResponse) {
+func (service *UserServiceImpl) ViewUser() ([]entities.User, *exceptions.BaseErrorResponse) {
 	tx := service.DB.Begin()
 	defer helper.CommitOrRollback(tx)
 	get, err := service.UserRepository.ViewUser(tx)
@@ -192,4 +192,46 @@ func (service *UserServiceImpl) DeleteUser(userID int) (bool, *exceptions.BaseEr
 	}
 
 	return deleteUser, nil
+}
+
+func (service *UserServiceImpl) GetAllRole() ([]payloads.RoleResponse, *exceptions.BaseErrorResponse) {
+	tx := service.DB.Begin()
+	defer helper.CommitOrRollback(tx)
+	result, err := service.UserRepository.GetAllRole(tx)
+
+	if err != nil {
+		return result, err
+	}
+
+	return result, nil
+}
+
+func (service *UserServiceImpl) GetPermissionsByRoleID(roleID int) []payloads.PermissionDetail {
+	tx := service.DB.Begin()
+	defer helper.CommitOrRollback(tx)
+	result := service.UserRepository.GetPermissionsByRoleID(tx, roleID)
+
+	return result
+}
+
+func (service *UserServiceImpl) GetRoleById(roleID int) (payloads.RoleResponse, *exceptions.BaseErrorResponse) {
+	tx := service.DB.Begin()
+	defer helper.CommitOrRollback(tx)
+	result, err := service.UserRepository.GetRoleById(tx, roleID)
+	if err != nil {
+		return result, err
+	}
+
+	return result, nil
+}
+
+func (service *UserServiceImpl) GetRoleWithPermissions(roleID int) (payloads.RoleResponse, *exceptions.BaseErrorResponse) {
+	tx := service.DB.Begin()
+	defer helper.CommitOrRollback(tx)
+	result, err := service.UserRepository.GetRoleWithPermissions(tx, roleID)
+	if err != nil {
+		return result, err
+	}
+
+	return result, nil
 }

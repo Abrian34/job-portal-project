@@ -168,25 +168,26 @@ func (*UserRepositoryImpl) ViewUser(tx *gorm.DB) ([]entities.User, *exceptions.B
 	return users, nil
 }
 
-func (*UserRepositoryImpl) GetByUsername(tx *gorm.DB, username string) (entities.User, *exceptions.BaseErrorResponse) {
+func (*UserRepositoryImpl) GetByUsername(tx *gorm.DB, username string) (payloads.UserDetail, *exceptions.BaseErrorResponse) {
 	var user entities.User
+	response := payloads.UserDetail{}
 
 	row, err := tx.
 		Model(user).
 		Where(entities.User{
 			UserName: username,
 		}).
-		Scan(&user).
+		Scan(&response).
 		Rows()
 
 	if err != nil {
-		return user, &exceptions.BaseErrorResponse{
+		return response, &exceptions.BaseErrorResponse{
 			StatusCode: http.StatusInternalServerError,
 			Err:        err,
 		}
 	}
 	if user.UserName == "" {
-		return user, &exceptions.BaseErrorResponse{
+		return response, &exceptions.BaseErrorResponse{
 			StatusCode: http.StatusNotFound,
 			Err:        err,
 		}
@@ -194,7 +195,7 @@ func (*UserRepositoryImpl) GetByUsername(tx *gorm.DB, username string) (entities
 
 	defer row.Close()
 
-	return user, nil
+	return response, nil
 }
 
 // func (*UserRepositoryImpl) GetByEmail(tx *gorm.DB, email string) (bool, *exceptions.BaseErrorResponse) {
@@ -390,7 +391,7 @@ func (*UserRepositoryImpl) Update(tx *gorm.DB, userReq payloads.CreateRequest, u
 		UserName:     userReq.UserName,
 		UserPassword: userReq.UserPassword,
 		ActiveStatus: userReq.ActiveStatus,
-		OtpEnabled:   true,
+		// OtpEnabled:   true,
 	}
 
 	err := tx.
@@ -420,4 +421,97 @@ func (*UserRepositoryImpl) Delete(tx *gorm.DB, userID int) (bool, *exceptions.Ba
 		}
 	}
 	return true, nil
+}
+
+func (r *UserRepositoryImpl) GetAllRole(tx *gorm.DB) ([]payloads.RoleResponse, *exceptions.BaseErrorResponse) {
+	var roles []entities.Role
+	err := tx.Model(&entities.Role{}).Find(&roles).Error
+	if err != nil {
+		return nil, &exceptions.BaseErrorResponse{
+			StatusCode: http.StatusInternalServerError,
+			Err:        err,
+		}
+	}
+
+	var roleResponses []payloads.RoleResponse
+	for _, role := range roles {
+		roleResponse := payloads.RoleResponse{
+			RoleId:      role.RoleId,
+			RoleName:    role.RoleName,
+			Permissions: r.GetPermissionsByRoleID(tx, role.RoleId),
+		}
+		roleResponses = append(roleResponses, roleResponse)
+	}
+
+	return roleResponses, nil
+}
+
+func (r *UserRepositoryImpl) GetPermissionsByRoleID(tx *gorm.DB, roleID int) []payloads.PermissionDetail {
+	var permissions []entities.Permission
+	err := tx.Model(&entities.Permission{}).Where("role_id = ?", roleID).Find(&permissions).Error
+	if err != nil {
+		return []payloads.PermissionDetail{}
+	}
+
+	var permissionResponses []payloads.PermissionDetail
+	for _, permission := range permissions {
+		permissionResponse := payloads.PermissionDetail{
+			PermissionId:   permission.PermissionId,
+			PermissionName: permission.PermissionName,
+		}
+		permissionResponses = append(permissionResponses, permissionResponse)
+	}
+
+	return permissionResponses
+}
+
+func (r *UserRepositoryImpl) GetRoleById(tx *gorm.DB, RoleId int) (payloads.RoleResponse, *exceptions.BaseErrorResponse) {
+	entity := entities.Role{}
+	response := payloads.RoleResponse{}
+
+	rows, err := tx.Model(&entity).
+		Where(entities.Role{
+			RoleId: RoleId,
+		}).
+		First(&response).
+		Rows()
+
+	if err != nil {
+		return response, &exceptions.BaseErrorResponse{
+			StatusCode: http.StatusInternalServerError,
+			Err:        err,
+		}
+	}
+
+	defer rows.Close()
+
+	return response, nil
+}
+
+func (repo *UserRepositoryImpl) GetRoleWithPermissions(tx *gorm.DB, roleID int) (payloads.RoleResponse, *exceptions.BaseErrorResponse) {
+	var role entities.Role
+
+	// Retrieve role by ID
+	if err := tx.Preload("Permissions").First(&role, roleID).Error; err != nil {
+		return payloads.RoleResponse{}, &exceptions.BaseErrorResponse{
+			StatusCode: http.StatusInternalServerError,
+			Err:        err,
+		}
+	}
+
+	// Convert the entity to a payload struct
+	response := payloads.RoleResponse{
+		RoleId:   role.RoleId,
+		RoleName: role.RoleName,
+	}
+
+	// Convert each permission to PermissionDetail
+	for _, permission := range role.Permissions {
+		response.Permissions = append(response.Permissions, payloads.PermissionDetail{
+			PermissionId:   permission.PermissionId,
+			PermissionName: permission.PermissionName,
+		})
+	}
+
+	return response, nil
 }
