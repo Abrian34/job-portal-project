@@ -6,9 +6,11 @@ import (
 )
 
 type AuthService interface {
-	Login(loginReq payloads.LoginRequest) (payloads.LoginResponse, *exceptions.BaseErrorResponse)
+	Login(payloads.LoginRequest) (payloads.LoginResponse, *exceptions.BaseErrorResponse)
 	// CheckPasswordResetTime(payloads.UpdateEmailTokenRequest) (bool, *exceptions.BaseErrorResponse)
 	Register(payloads.CreateRequest, int) (int, *exceptions.BaseErrorResponse)
+	CheckUserExists(string) (bool, *exceptions.BaseErrorResponse)
+	GetRoleWithPermissions(int) (payloads.RoleResponse, *exceptions.BaseErrorResponse)
 	// GenerateOTP(int) (string, *exceptions.BaseErrorResponse)
 	// UpdateUserOTP(entities.OTPInput, string) (*payloads.ResponseAuth, *exceptions.BaseErrorResponse)
 	// UpdateCredential(payloads.LoginCredential, int) (bool, *exceptions.BaseErrorResponse)

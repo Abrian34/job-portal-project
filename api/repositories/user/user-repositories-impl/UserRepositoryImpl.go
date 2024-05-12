@@ -85,30 +85,31 @@ func (*UserRepositoryImpl) GetRoleByCompanyAndUserID(tx *gorm.DB, companyID int,
 func NewUserRepository() userrepo.UserRepository {
 	return &UserRepositoryImpl{}
 }
-func (*UserRepositoryImpl) CheckUserExists(tx *gorm.DB, username string) (bool, *exceptions.BaseErrorResponse) {
-	var user entities.User
-	var exists bool
-	err := tx.Model(user).
-		Select(
-			"count(id)",
-		).
-		Where(entities.User{UserName: username}).
-		Find(&exists).
-		Error
-	if exists {
-		return exists, &exceptions.BaseErrorResponse{
-			StatusCode: http.StatusConflict,
-			Err:        err,
-		}
-	}
-	if err != nil {
-		return exists, &exceptions.BaseErrorResponse{
-			StatusCode: http.StatusInternalServerError,
-			Err:        err,
-		}
-	}
-	return exists, nil
-}
+
+// func (*UserRepositoryImpl) CheckUserExists(tx *gorm.DB, username string) (bool, *exceptions.BaseErrorResponse) {
+// 	var user entities.User
+// 	var exists bool
+// 	err := tx.Model(user).
+// 		Select(
+// 			"count(id)",
+// 		).
+// 		Where(entities.User{UserName: username}).
+// 		Find(&exists).
+// 		Error
+// 	if exists {
+// 		return exists, &exceptions.BaseErrorResponse{
+// 			StatusCode: http.StatusConflict,
+// 			Err:        err,
+// 		}
+// 	}
+// 	if err != nil {
+// 		return exists, &exceptions.BaseErrorResponse{
+// 			StatusCode: http.StatusInternalServerError,
+// 			Err:        err,
+// 		}
+// 	}
+// 	return exists, nil
+// }
 
 func (*UserRepositoryImpl) FindUser(tx *gorm.DB, username string) (payloads.UserDetails, *exceptions.BaseErrorResponse) {
 	var user entities.User
@@ -488,30 +489,30 @@ func (r *UserRepositoryImpl) GetRoleById(tx *gorm.DB, RoleId int) (payloads.Role
 	return response, nil
 }
 
-func (repo *UserRepositoryImpl) GetRoleWithPermissions(tx *gorm.DB, roleID int) (payloads.RoleResponse, *exceptions.BaseErrorResponse) {
-	var role entities.Role
+// func (repo *UserRepositoryImpl) GetRoleWithPermissions(tx *gorm.DB, roleID int) (payloads.RoleResponse, *exceptions.BaseErrorResponse) {
+// 	var role entities.Role
 
-	// Retrieve role by ID
-	if err := tx.Preload("Permissions").First(&role, roleID).Error; err != nil {
-		return payloads.RoleResponse{}, &exceptions.BaseErrorResponse{
-			StatusCode: http.StatusInternalServerError,
-			Err:        err,
-		}
-	}
+// 	// Retrieve role by ID
+// 	if err := tx.Preload("Permissions").First(&role, roleID).Error; err != nil {
+// 		return payloads.RoleResponse{}, &exceptions.BaseErrorResponse{
+// 			StatusCode: http.StatusInternalServerError,
+// 			Err:        err,
+// 		}
+// 	}
 
-	// Convert the entity to a payload struct
-	response := payloads.RoleResponse{
-		RoleId:   role.RoleId,
-		RoleName: role.RoleName,
-	}
+// 	// Convert the entity to a payload struct
+// 	response := payloads.RoleResponse{
+// 		RoleId:   role.RoleId,
+// 		RoleName: role.RoleName,
+// 	}
 
-	// Convert each permission to PermissionDetail
-	for _, permission := range role.Permissions {
-		response.Permissions = append(response.Permissions, payloads.PermissionDetail{
-			PermissionId:   permission.PermissionId,
-			PermissionName: permission.PermissionName,
-		})
-	}
+// 	// Convert each permission to PermissionDetail
+// 	for _, permission := range role.Permissions {
+// 		response.Permissions = append(response.Permissions, payloads.PermissionDetail{
+// 			PermissionId:   permission.PermissionId,
+// 			PermissionName: permission.PermissionName,
+// 		})
+// 	}
 
-	return response, nil
-}
+// 	return response, nil
+// }

@@ -20,9 +20,8 @@ func GetAuthentication(request *http.Request) error {
 	if err != nil {
 		return errors.New(constant.SessionError)
 	}
-	_, ok := token.Claims.(jwt.Claims)
 
-	if !ok && !token.Valid {
+	if !token.Valid {
 		return errors.New(constant.SessionError)
 	}
 

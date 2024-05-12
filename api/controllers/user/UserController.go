@@ -29,7 +29,7 @@ type UserControllerImpl struct {
 func (controller *UserControllerImpl) GetCurrentUser(writer http.ResponseWriter, request *http.Request) {
 	claims, _ := securities.ExtractAuthToken(request)
 
-	userResponse, err := controller.UserService.GetCurrentUser(claims.UserID)
+	userResponse, err := controller.UserService.GetCurrentUser(claims.UserId)
 
 	if err != nil {
 		helper.ReturnError(writer, request, err)
@@ -49,7 +49,7 @@ func NewUserController(userService userservices.UserService) UserController {
 func (controller *UserControllerImpl) GetUser(writer http.ResponseWriter, request *http.Request) {
 	claims, _ := securities.ExtractAuthToken(request)
 
-	userResponse, err := controller.UserService.GetUser(claims.Username)
+	userResponse, err := controller.UserService.GetUser(claims.UserName)
 
 	if err != nil {
 		helper.ReturnError(writer, request, err)
@@ -119,7 +119,7 @@ func (controller *UserControllerImpl) GetUserIDByUsername(writer http.ResponseWr
 func (controller *UserControllerImpl) FindUser(writer http.ResponseWriter, request *http.Request) {
 	claims, _ := securities.ExtractAuthToken(request)
 
-	userResponse, err := controller.UserService.FindUser(claims.Username)
+	userResponse, err := controller.UserService.FindUser(claims.UserName)
 
 	if err != nil {
 		helper.ReturnError(writer, request, err)

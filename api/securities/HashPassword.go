@@ -1,12 +1,20 @@
 package securities
 
-import "golang.org/x/crypto/bcrypt"
+import (
+	"job-portal-project/api/exceptions"
+	"net/http"
 
-func HashPassword(password string) (string, error) {
+	"golang.org/x/crypto/bcrypt"
+)
+
+func HashPassword(password string) (string, *exceptions.BaseErrorResponse) {
 	hashPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 
 	if err != nil {
-		return "", err
+		return "", &exceptions.BaseErrorResponse{
+			StatusCode: http.StatusInternalServerError,
+			Err:        err,
+		}
 	}
 
 	hash := string(hashPassword)

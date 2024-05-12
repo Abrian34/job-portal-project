@@ -4,7 +4,6 @@ import (
 	"job-portal-project/api/exceptions"
 	"job-portal-project/api/helper"
 	"job-portal-project/api/payloads"
-	redisrepo "job-portal-project/api/repositories/redis"
 	userrepo "job-portal-project/api/repositories/user"
 	"job-portal-project/api/securities"
 	userservices "job-portal-project/api/services/user"
@@ -25,7 +24,6 @@ func NewAuthService(
 	db *gorm.DB,
 	authRepository userrepo.AuthRepository,
 	userRepository userrepo.UserRepository,
-	redisRepository redisrepo.RedisRepository,
 	validate *validator.Validate,
 ) userservices.AuthService {
 	return &AuthServiceImpl{
@@ -51,7 +49,7 @@ func (service *AuthServiceImpl) Login(loginReq payloads.LoginRequest) (payloads.
 		return payloads.LoginResponse{}, err
 	}
 
-	role, err := service.UserRepository.GetRoleWithPermissions(tx, user.RoleId)
+	role, err := service.AuthRepository.GetRoleWithPermissions(tx, user.RoleId)
 	if err != nil {
 		return payloads.LoginResponse{}, err
 	}
@@ -87,22 +85,46 @@ func (service *AuthServiceImpl) Login(loginReq payloads.LoginRequest) (payloads.
 func (service *AuthServiceImpl) Register(userReq payloads.CreateRequest, roleID int) (int, *exceptions.BaseErrorResponse) {
 	tx := service.DB.Begin()
 	defer helper.CommitOrRollback(tx)
-	_, err := service.UserRepository.CheckUserExists(tx, userReq.Username)
+	_, err := service.AuthRepository.CheckUserExists(tx, userReq.UserName)
 	if err != nil {
 		return 0, err
 	}
-	hash, err := securities.HashPassword(userReq.Password)
+	hash, err := securities.HashPassword(userReq.UserPassword)
 	if err != nil {
 		return 0, err
 	}
-	userReq.Username = strings.ToLower(strings.ReplaceAll(userReq.Username, " ", ""))
-	userReq.Password = strings.ReplaceAll(userReq.Password, " ", "")
-	userReq.Password = hash
+	userReq.UserName = strings.ToLower(strings.ReplaceAll(userReq.UserName, " ", ""))
+	userReq.UserPassword = strings.ReplaceAll(userReq.UserPassword, " ", "")
+	userReq.UserPassword = hash
 
 	get, err := service.UserRepository.Create(tx, userReq, roleID)
 
 	if err != nil {
 		return get, err
+	}
+
+	return get, nil
+}
+
+func (service *AuthServiceImpl) GetRoleWithPermissions(roleID int) (payloads.RoleResponse, *exceptions.BaseErrorResponse) {
+	tx := service.DB.Begin()
+	defer helper.CommitOrRollback(tx)
+	result, err := service.AuthRepository.GetRoleWithPermissions(tx, roleID)
+	if err != nil {
+		return result, err
+	}
+
+	return result, nil
+}
+
+func (service *AuthServiceImpl) CheckUserExists(username string) (bool, *exceptions.BaseErrorResponse) {
+	tx := service.DB.Begin()
+	defer helper.CommitOrRollback(tx)
+
+	get, err := service.AuthRepository.CheckUserExists(tx, username)
+
+	if err != nil {
+		return false, err
 	}
 
 	return get, nil

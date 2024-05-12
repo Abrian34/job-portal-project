@@ -9,7 +9,7 @@ import (
 )
 
 type UserRepository interface {
-	CheckUserExists(*gorm.DB, string) (bool, *exceptions.BaseErrorResponse)
+	// CheckUserExists(*gorm.DB, string) (bool, *exceptions.BaseErrorResponse)
 	FindUser(*gorm.DB, string) (payloads.UserDetails, *exceptions.BaseErrorResponse)
 	ViewUser(*gorm.DB) ([]entities.User, *exceptions.BaseErrorResponse)
 	GetCurrentUser(*gorm.DB, int) (payloads.CurrentUserResponse, *exceptions.BaseErrorResponse)
@@ -27,5 +27,5 @@ type UserRepository interface {
 	GetAllRole(*gorm.DB) ([]payloads.RoleResponse, *exceptions.BaseErrorResponse)
 	GetPermissionsByRoleID(*gorm.DB, int) []payloads.PermissionDetail
 	GetRoleById(*gorm.DB, int) (payloads.RoleResponse, *exceptions.BaseErrorResponse)
-	GetRoleWithPermissions(*gorm.DB, int) (payloads.RoleResponse, *exceptions.BaseErrorResponse)
+	// GetRoleWithPermissions(*gorm.DB, int) (payloads.RoleResponse, *exceptions.BaseErrorResponse)
 }

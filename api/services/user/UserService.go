@@ -9,7 +9,7 @@ import (
 type UserService interface {
 	GetCurrentUser(int) (payloads.CurrentUserResponse, *exceptions.BaseErrorResponse)
 	FindUser(string) (payloads.UserDetails, *exceptions.BaseErrorResponse)
-	CheckUserExists(string) (bool, *exceptions.BaseErrorResponse)
+	// CheckUserExists(string) (bool, *exceptions.BaseErrorResponse)
 	ViewUser() ([]entities.User, *exceptions.BaseErrorResponse)
 	// GetEmails([]int) ([]string, *exceptions.BaseErrorResponse)
 	GetByID(int) (entities.User, *exceptions.BaseErrorResponse)
@@ -22,5 +22,5 @@ type UserService interface {
 	GetAllRole() ([]payloads.RoleResponse, *exceptions.BaseErrorResponse)
 	GetPermissionsByRoleID(int) []payloads.PermissionDetail
 	GetRoleById(int) (payloads.RoleResponse, *exceptions.BaseErrorResponse)
-	GetRoleWithPermissions(int) (payloads.RoleResponse, *exceptions.BaseErrorResponse)
+	// GetRoleWithPermissions(int) (payloads.RoleResponse, *exceptions.BaseErrorResponse)
 }

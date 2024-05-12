@@ -39,18 +39,19 @@ func NewUserService(userRepository userrepo.UserRepository, db *gorm.DB, validat
 		Validate:       validate,
 	}
 }
-func (service *UserServiceImpl) CheckUserExists(username string) (bool, *exceptions.BaseErrorResponse) {
-	tx := service.DB.Begin()
-	defer helper.CommitOrRollback(tx)
 
-	get, err := service.UserRepository.CheckUserExists(tx, username)
+// func (service *UserServiceImpl) CheckUserExists(username string) (bool, *exceptions.BaseErrorResponse) {
+// 	tx := service.DB.Begin()
+// 	defer helper.CommitOrRollback(tx)
 
-	if err != nil {
-		return false, err
-	}
+// 	get, err := service.UserRepository.CheckUserExists(tx, username)
 
-	return get, nil
-}
+// 	if err != nil {
+// 		return false, err
+// 	}
+
+// 	return get, nil
+// }
 
 func (service *UserServiceImpl) FindUser(username string) (payloads.UserDetails, *exceptions.BaseErrorResponse) {
 	tx := service.DB.Begin()
@@ -225,13 +226,13 @@ func (service *UserServiceImpl) GetRoleById(roleID int) (payloads.RoleResponse, 
 	return result, nil
 }
 
-func (service *UserServiceImpl) GetRoleWithPermissions(roleID int) (payloads.RoleResponse, *exceptions.BaseErrorResponse) {
-	tx := service.DB.Begin()
-	defer helper.CommitOrRollback(tx)
-	result, err := service.UserRepository.GetRoleWithPermissions(tx, roleID)
-	if err != nil {
-		return result, err
-	}
+// func (service *UserServiceImpl) GetRoleWithPermissions(roleID int) (payloads.RoleResponse, *exceptions.BaseErrorResponse) {
+// 	tx := service.DB.Begin()
+// 	defer helper.CommitOrRollback(tx)
+// 	result, err := service.UserRepository.GetRoleWithPermissions(tx, roleID)
+// 	if err != nil {
+// 		return result, err
+// 	}
 
-	return result, nil
-}
+// 	return result, nil
+// }
