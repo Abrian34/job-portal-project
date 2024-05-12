@@ -10,8 +10,9 @@ DB_PASS=1234
 DB_NAME=JobPortalDB  
 DB_HOST=localhost         
 DB_PORT=5432              
-
 CLIENT_ORIGIN=localhost:2000
+
+STEPS
 ========================================================================
 1. RUN AUTOMIGRATE, go run main.go migrate
 2. RUN COMMAND, go run main.go
