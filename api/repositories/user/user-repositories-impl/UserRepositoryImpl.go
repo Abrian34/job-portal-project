@@ -387,27 +387,27 @@ func (*UserRepositoryImpl) Create(tx *gorm.DB, userReq payloads.CreateRequest, r
 	return user.UserId, nil
 }
 
-func (*UserRepositoryImpl) Update(tx *gorm.DB, userReq payloads.CreateRequest, userID int) (bool, *exceptions.BaseErrorResponse) {
-	user := entities.User{
-		UserName:     userReq.UserName,
-		UserPassword: userReq.UserPassword,
-		ActiveStatus: userReq.ActiveStatus,
-		// OtpEnabled:   true,
-	}
+// func (*UserRepositoryImpl) Update(tx *gorm.DB, userReq payloads.CreateRequest, userID int) (bool, *exceptions.BaseErrorResponse) {
+// 	user := entities.User{
+// 		UserName:     userReq.UserName,
+// 		UserPassword: userReq.UserPassword,
+// 		ActiveStatus: userReq.ActiveStatus,
+// 		// OtpEnabled:   true,
+// 	}
 
-	err := tx.
-		Where(userID).
-		Updates(&user).
-		Error
-	if err != nil {
-		return false, &exceptions.BaseErrorResponse{
-			StatusCode: http.StatusInternalServerError,
-			Err:        err,
-		}
-	}
+// 	err := tx.
+// 		Where(userID).
+// 		Updates(&user).
+// 		Error
+// 	if err != nil {
+// 		return false, &exceptions.BaseErrorResponse{
+// 			StatusCode: http.StatusInternalServerError,
+// 			Err:        err,
+// 		}
+// 	}
 
-	return true, nil
-}
+//		return true, nil
+//	}
 func (*UserRepositoryImpl) Delete(tx *gorm.DB, userID int) (bool, *exceptions.BaseErrorResponse) {
 
 	err := tx.
@@ -437,9 +437,8 @@ func (r *UserRepositoryImpl) GetAllRole(tx *gorm.DB) ([]payloads.RoleResponse, *
 	var roleResponses []payloads.RoleResponse
 	for _, role := range roles {
 		roleResponse := payloads.RoleResponse{
-			RoleId:      role.RoleId,
-			RoleName:    role.RoleName,
-			Permissions: r.GetPermissionsByRoleID(tx, role.RoleId),
+			RoleId:   role.RoleId,
+			RoleName: role.RoleName,
 		}
 		roleResponses = append(roleResponses, roleResponse)
 	}
@@ -447,24 +446,24 @@ func (r *UserRepositoryImpl) GetAllRole(tx *gorm.DB) ([]payloads.RoleResponse, *
 	return roleResponses, nil
 }
 
-func (r *UserRepositoryImpl) GetPermissionsByRoleID(tx *gorm.DB, roleID int) []payloads.PermissionDetail {
-	var permissions []entities.Permission
-	err := tx.Model(&entities.Permission{}).Where("role_id = ?", roleID).Find(&permissions).Error
-	if err != nil {
-		return []payloads.PermissionDetail{}
-	}
+// func (r *UserRepositoryImpl) GetPermissionsByRoleID(tx *gorm.DB, roleID int) []payloads.PermissionDetail {
+// 	var permissions []entities.Permission
+// 	err := tx.Model(&entities.Permission{}).Where("role_id = ?", roleID).Find(&permissions).Error
+// 	if err != nil {
+// 		return []payloads.PermissionDetail{}
+// 	}
 
-	var permissionResponses []payloads.PermissionDetail
-	for _, permission := range permissions {
-		permissionResponse := payloads.PermissionDetail{
-			PermissionId:   permission.PermissionId,
-			PermissionName: permission.PermissionName,
-		}
-		permissionResponses = append(permissionResponses, permissionResponse)
-	}
+// 	var permissionResponses []payloads.PermissionDetail
+// 	for _, permission := range permissions {
+// 		permissionResponse := payloads.PermissionDetail{
+// 			PermissionId:   permission.PermissionId,
+// 			PermissionName: permission.PermissionName,
+// 		}
+// 		permissionResponses = append(permissionResponses, permissionResponse)
+// 	}
 
-	return permissionResponses
-}
+// 	return permissionResponses
+// }
 
 func (r *UserRepositoryImpl) GetRoleById(tx *gorm.DB, RoleId int) (payloads.RoleResponse, *exceptions.BaseErrorResponse) {
 	entity := entities.Role{}

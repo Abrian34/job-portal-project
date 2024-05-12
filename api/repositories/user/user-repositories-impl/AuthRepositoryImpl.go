@@ -196,32 +196,58 @@ func NewAuthRepository() userrepo.AuthRepository {
 // 	return true, nil
 // }
 
-func (repo *AuthRepositoryImpl) GetRoleWithPermissions(tx *gorm.DB, roleID int) (payloads.RoleResponse, *exceptions.BaseErrorResponse) {
-	var role entities.Role
+// func (repo *AuthRepositoryImpl) GetRoleWithPermissions(tx *gorm.DB, roleID int) (payloads.RoleResponse, *exceptions.BaseErrorResponse) {
+// 	var role entities.Role
 
-	// Retrieve role by ID
-	if err := tx.Preload("Permissions").First(&role, roleID).Error; err != nil {
+// 	// Retrieve role by ID
+// 	if err := tx.Preload("Permissions").First(&role, roleID).Error; err != nil {
+// 		return payloads.RoleResponse{}, &exceptions.BaseErrorResponse{
+// 			StatusCode: http.StatusInternalServerError,
+// 			Err:        err,
+// 		}
+// 	}
+
+// 	// Convert the entity to a payload struct
+// 	response := payloads.RoleResponse{
+// 		RoleId:   role.RoleId,
+// 		RoleName: role.RoleName,
+// 	}
+
+// 	// Convert each permission to PermissionDetail
+// 	for _, permission := range role.Permissions {
+// 		response.Permissions = append(response.Permissions, payloads.PermissionDetail{
+// 			PermissionId:   permission.PermissionId,
+// 			PermissionName: permission.PermissionName,
+// 		})
+// 	}
+
+// 	return response, nil
+// }
+
+func (repo *AuthRepositoryImpl) GetRoleByUserID(tx *gorm.DB, userID int) (payloads.RoleResponse, *exceptions.BaseErrorResponse) {
+	var user entities.User
+	if err := tx.First(&user, userID).Error; err != nil {
 		return payloads.RoleResponse{}, &exceptions.BaseErrorResponse{
 			StatusCode: http.StatusInternalServerError,
 			Err:        err,
 		}
 	}
 
-	// Convert the entity to a payload struct
-	response := payloads.RoleResponse{
+	var role entities.Role
+	if err := tx.First(&role, user.RoleId).Error; err != nil {
+		return payloads.RoleResponse{}, &exceptions.BaseErrorResponse{
+			StatusCode: http.StatusInternalServerError,
+			Err:        err,
+		}
+	}
+
+	// Convert the entities.Role to payloads.RoleResponse
+	roleResponse := payloads.RoleResponse{
 		RoleId:   role.RoleId,
 		RoleName: role.RoleName,
 	}
 
-	// Convert each permission to PermissionDetail
-	for _, permission := range role.Permissions {
-		response.Permissions = append(response.Permissions, payloads.PermissionDetail{
-			PermissionId:   permission.PermissionId,
-			PermissionName: permission.PermissionName,
-		})
-	}
-
-	return response, nil
+	return roleResponse, nil
 }
 
 func (*AuthRepositoryImpl) CheckUserExists(tx *gorm.DB, username string) (bool, *exceptions.BaseErrorResponse) {

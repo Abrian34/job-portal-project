@@ -3,6 +3,7 @@ package usercontrollers
 import (
 	"job-portal-project/api/exceptions"
 	"job-portal-project/api/helper"
+	jsonchecker "job-portal-project/api/helper/json/json-checker"
 	"job-portal-project/api/payloads"
 	"job-portal-project/api/securities"
 	userservices "job-portal-project/api/services/user"
@@ -19,13 +20,16 @@ type UserController interface {
 	GetUserIDByUsername(writer http.ResponseWriter, request *http.Request)
 	GetUsernameByUserID(writer http.ResponseWriter, request *http.Request)
 	FindUser(writer http.ResponseWriter, request *http.Request)
+	Register(writer http.ResponseWriter, request *http.Request)
+	Login(writer http.ResponseWriter, request *http.Request)
+	GetRoleById(writer http.ResponseWriter, request *http.Request)
 }
 
 type UserControllerImpl struct {
 	UserService userservices.UserService
+	AuthService userservices.AuthService
 }
 
-// GetCurrentUser implements UserController.
 func (controller *UserControllerImpl) GetCurrentUser(writer http.ResponseWriter, request *http.Request) {
 	claims, _ := securities.ExtractAuthToken(request)
 
@@ -45,7 +49,45 @@ func NewUserController(userService userservices.UserService) UserController {
 	}
 }
 
-// GetUser implements UserController.
+func (controller *UserControllerImpl) Register(writer http.ResponseWriter, request *http.Request) {
+	var registrationRequest payloads.CreateRequest
+	err := jsonchecker.ReadFromRequestBody(request, &registrationRequest)
+	if err != nil {
+		exceptions.NewEntityException(writer, request, err)
+		return
+	}
+
+	roleID, _ := strconv.Atoi(chi.URLParam(request, "role_id"))
+
+	userID, err := controller.AuthService.Register(registrationRequest, roleID)
+	if err != nil {
+		helper.ReturnError(writer, request, err)
+		return
+	}
+
+	response := payloads.RegisterResponse{
+		UserID: userID,
+	}
+	payloads.NewHandleSuccess(writer, response, "User registered successfully", http.StatusCreated)
+}
+
+func (controller *UserControllerImpl) Login(writer http.ResponseWriter, request *http.Request) {
+	var loginRequest payloads.LoginRequest
+	err := jsonchecker.ReadFromRequestBody(request, &loginRequest)
+	if err != nil {
+		exceptions.NewEntityException(writer, request, err)
+		return
+	}
+
+	loginResponse, err := controller.AuthService.Login(loginRequest)
+	if err != nil {
+		helper.ReturnError(writer, request, err)
+		return
+	}
+
+	payloads.NewHandleSuccess(writer, loginResponse, "User Login successfully", http.StatusCreated)
+}
+
 func (controller *UserControllerImpl) GetUser(writer http.ResponseWriter, request *http.Request) {
 	claims, _ := securities.ExtractAuthToken(request)
 
@@ -59,15 +101,17 @@ func (controller *UserControllerImpl) GetUser(writer http.ResponseWriter, reques
 	payloads.HandleSuccess(writer, userResponse, constant.GetDataSuccess, http.StatusOK)
 }
 
-// @Summary Find User By ID
-// @Description REST API User
-// @Accept json
-// @Produce json
-// @Tags User Controller
-// @Security BearerAuth
-// @Success 200 {object} payloads.Respons
-// @Failure 500,400,401,404,403,422 {object} exceptions.Error
-// @Router /user/{user_id} [get]
+func (controller *UserControllerImpl) GetRoleById(writer http.ResponseWriter, request *http.Request) {
+	RoleId, _ := strconv.Atoi(chi.URLParam(request, "role_id"))
+	RoleResponse, errors := controller.UserService.GetRoleById(RoleId)
+
+	if errors != nil {
+		helper.ReturnError(writer, request, errors)
+		return
+	}
+	payloads.NewHandleSuccess(writer, RoleResponse, constant.GetDataSuccess, http.StatusOK)
+}
+
 func (controller *UserControllerImpl) GetUsernameByUserID(writer http.ResponseWriter, request *http.Request) {
 	userID, err := strconv.Atoi(chi.URLParam(request, "user_id"))
 	if err != nil {
@@ -85,15 +129,6 @@ func (controller *UserControllerImpl) GetUsernameByUserID(writer http.ResponseWr
 	payloads.HandleSuccess(writer, userResponse, constant.GetDataSuccess, http.StatusOK)
 }
 
-// @Summary Find User By ID
-// @Description REST API User
-// @Accept json
-// @Produce json
-// @Tags User Controller
-// @Security BearerAuth
-// @Success 200 {object} payloads.Respons
-// @Failure 500,400,401,404,403,422 {object} exceptions.Error
-// @Router /user/username/{username} [get]
 func (controller *UserControllerImpl) GetUserIDByUsername(writer http.ResponseWriter, request *http.Request) {
 	username := chi.URLParam(request, "username")
 	userResponse, err := controller.UserService.GetUserIDByUsername(username)
@@ -105,16 +140,6 @@ func (controller *UserControllerImpl) GetUserIDByUsername(writer http.ResponseWr
 
 	payloads.HandleSuccess(writer, userResponse, constant.GetDataSuccess, http.StatusOK)
 }
-
-// @Summary Find User
-// @Description REST API User
-// @Accept json
-// @Produce json
-// @Tags User Controller
-// @Security BearerAuth
-// @Success 200 {object} payloads.Respons
-// @Failure 500,400,401,404,403,422 {object} exceptions.Error
-// @Router /user [get]
 
 func (controller *UserControllerImpl) FindUser(writer http.ResponseWriter, request *http.Request) {
 	claims, _ := securities.ExtractAuthToken(request)

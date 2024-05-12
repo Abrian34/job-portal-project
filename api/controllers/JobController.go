@@ -12,7 +12,6 @@ import (
 	"job-portal-project/api/payloads/pagination"
 	service "job-portal-project/api/services"
 	"job-portal-project/api/utils"
-	"job-portal-project/api/validation"
 	"net/http"
 	"strconv"
 
@@ -82,11 +81,6 @@ func (r *JobControllerImpl) SaveJob(writer http.ResponseWriter, request *http.Re
 	err := jsonchecker.ReadFromRequestBody(request, &JobRequest)
 	if err != nil {
 		exceptions.NewEntityException(writer, request, err)
-		return
-	}
-	err = validation.ValidationForm(writer, request, JobRequest)
-	if err != nil {
-		exceptions.NewBadRequestException(writer, request, err)
 		return
 	}
 	create, err := r.JobService.SaveJob(JobRequest)

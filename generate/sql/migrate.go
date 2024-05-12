@@ -51,7 +51,10 @@ func Migrate() {
 	// 	}, DisableForeignKeyConstraintWhenMigrating: false})
 
 	db.AutoMigrate( // sesuai urutan foreign key
+		&entities.Role{},
+		&entities.User{},
 		&entities.Job{},
+		&entities.JobApplication{},
 	)
 
 	if db != nil && db.Error != nil {

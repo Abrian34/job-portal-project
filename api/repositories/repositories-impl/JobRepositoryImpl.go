@@ -46,10 +46,9 @@ func (*JobRepositoryImpl) GetJobById(tx *gorm.DB, Id int) (entitypayloads.JobPay
 func (r *JobRepositoryImpl) SaveJob(tx *gorm.DB, req entitypayloads.JobPayload) (bool, *exceptions.BaseErrorResponse) {
 	entities := entities.Job{
 		JobCode:        req.JobCode,
+		UserId:         req.UserId,
 		JobId:          req.JobId,
-		EmployerId:     req.EmployerId,
 		JobPostDate:    req.JobPostDate,
-		CompanyId:      req.CompanyId,
 		JobTitle:       req.JobTitle,
 		JobDescription: req.JobDescription,
 		JobLevel:       req.JobLevel,

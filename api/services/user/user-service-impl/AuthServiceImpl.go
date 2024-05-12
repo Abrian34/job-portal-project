@@ -9,7 +9,6 @@ import (
 	userservices "job-portal-project/api/services/user"
 	"strings"
 
-	"github.com/go-playground/validator/v10"
 	"gorm.io/gorm"
 )
 
@@ -17,20 +16,17 @@ type AuthServiceImpl struct {
 	DB             *gorm.DB
 	AuthRepository userrepo.AuthRepository
 	UserRepository userrepo.UserRepository
-	Validate       *validator.Validate
 }
 
 func NewAuthService(
 	db *gorm.DB,
 	authRepository userrepo.AuthRepository,
 	userRepository userrepo.UserRepository,
-	validate *validator.Validate,
 ) userservices.AuthService {
 	return &AuthServiceImpl{
 		DB:             db,
 		AuthRepository: authRepository,
 		UserRepository: userRepository,
-		Validate:       validate,
 	}
 }
 
@@ -49,7 +45,7 @@ func (service *AuthServiceImpl) Login(loginReq payloads.LoginRequest) (payloads.
 		return payloads.LoginResponse{}, err
 	}
 
-	role, err := service.AuthRepository.GetRoleWithPermissions(tx, user.RoleId)
+	role, err := service.AuthRepository.GetRoleByUserID(tx, user.RoleId)
 	if err != nil {
 		return payloads.LoginResponse{}, err
 	}
@@ -73,9 +69,8 @@ func (service *AuthServiceImpl) Login(loginReq payloads.LoginRequest) (payloads.
 
 	// Construct login response with user details and role
 	loginResponse := payloads.LoginResponse{
-		User:        userDetails,
-		Permissions: role.Permissions,
-		Token:       token,
+		User:  userDetails,
+		Token: token,
 	}
 
 	return loginResponse, nil
@@ -106,16 +101,16 @@ func (service *AuthServiceImpl) Register(userReq payloads.CreateRequest, roleID 
 	return get, nil
 }
 
-func (service *AuthServiceImpl) GetRoleWithPermissions(roleID int) (payloads.RoleResponse, *exceptions.BaseErrorResponse) {
-	tx := service.DB.Begin()
-	defer helper.CommitOrRollback(tx)
-	result, err := service.AuthRepository.GetRoleWithPermissions(tx, roleID)
-	if err != nil {
-		return result, err
-	}
+// func (service *AuthServiceImpl) GetRoleWithPermissions(roleID int) (payloads.RoleResponse, *exceptions.BaseErrorResponse) {
+// 	tx := service.DB.Begin()
+// 	defer helper.CommitOrRollback(tx)
+// 	result, err := service.AuthRepository.GetRoleWithPermissions(tx, roleID)
+// 	if err != nil {
+// 		return result, err
+// 	}
 
-	return result, nil
-}
+// 	return result, nil
+// }
 
 func (service *AuthServiceImpl) CheckUserExists(username string) (bool, *exceptions.BaseErrorResponse) {
 	tx := service.DB.Begin()
@@ -128,6 +123,19 @@ func (service *AuthServiceImpl) CheckUserExists(username string) (bool, *excepti
 	}
 
 	return get, nil
+}
+
+func (service *AuthServiceImpl) GetRoleByUserID(userID int) (payloads.RoleResponse, *exceptions.BaseErrorResponse) {
+	tx := service.DB.Begin()
+	defer helper.CommitOrRollback(tx)
+
+	result, err := service.AuthRepository.GetRoleByUserID(tx, userID)
+
+	if err != nil {
+		return result, err
+	}
+
+	return result, nil
 }
 
 // CheckPasswordResetTime implements services.AuthService.

@@ -8,14 +8,12 @@ import (
 	userrepo "job-portal-project/api/repositories/user"
 	userservices "job-portal-project/api/services/user"
 
-	"github.com/go-playground/validator/v10"
 	"gorm.io/gorm"
 )
 
 type UserServiceImpl struct {
 	UserRepository userrepo.UserRepository
 	DB             *gorm.DB
-	Validate       *validator.Validate
 }
 
 // GetCurrentUser implements userservices.UserService.
@@ -32,11 +30,10 @@ func (service *UserServiceImpl) GetCurrentUser(userID int) (payloads.CurrentUser
 	return get, nil
 }
 
-func NewUserService(userRepository userrepo.UserRepository, db *gorm.DB, validate *validator.Validate) userservices.UserService {
+func NewUserService(userRepository userrepo.UserRepository, db *gorm.DB) userservices.UserService {
 	return &UserServiceImpl{
 		UserRepository: userRepository,
 		DB:             db,
-		Validate:       validate,
 	}
 }
 
@@ -170,17 +167,17 @@ func (service *UserServiceImpl) ViewUser() ([]entities.User, *exceptions.BaseErr
 }
 
 // UpdateUser implements services.UserService.
-func (service *UserServiceImpl) UpdateUser(userReq payloads.CreateRequest, userID int) (bool, *exceptions.BaseErrorResponse) {
-	tx := service.DB.Begin()
-	defer helper.CommitOrRollback(tx)
-	update, err := service.UserRepository.Update(tx, userReq, userID)
+// func (service *UserServiceImpl) UpdateUser(userReq payloads.CreateRequest, userID int) (bool, *exceptions.BaseErrorResponse) {
+// 	tx := service.DB.Begin()
+// 	defer helper.CommitOrRollback(tx)
+// 	update, err := service.UserRepository.Update(tx, userReq, userID)
 
-	if err != nil {
-		return update, err
-	}
+// 	if err != nil {
+// 		return update, err
+// 	}
 
-	return update, nil
-}
+// 	return update, nil
+// }
 
 // DeleteUser implements services.UserService.
 func (service *UserServiceImpl) DeleteUser(userID int) (bool, *exceptions.BaseErrorResponse) {
@@ -207,13 +204,13 @@ func (service *UserServiceImpl) GetAllRole() ([]payloads.RoleResponse, *exceptio
 	return result, nil
 }
 
-func (service *UserServiceImpl) GetPermissionsByRoleID(roleID int) []payloads.PermissionDetail {
-	tx := service.DB.Begin()
-	defer helper.CommitOrRollback(tx)
-	result := service.UserRepository.GetPermissionsByRoleID(tx, roleID)
+// func (service *UserServiceImpl) GetPermissionsByRoleID(roleID int) []payloads.PermissionDetail {
+// 	tx := service.DB.Begin()
+// 	defer helper.CommitOrRollback(tx)
+// 	result := service.UserRepository.GetPermissionsByRoleID(tx, roleID)
 
-	return result
-}
+// 	return result
+// }
 
 func (service *UserServiceImpl) GetRoleById(roleID int) (payloads.RoleResponse, *exceptions.BaseErrorResponse) {
 	tx := service.DB.Begin()

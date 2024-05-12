@@ -22,10 +22,10 @@ type UserRepository interface {
 	GetRoleByCompanyAndUserID(*gorm.DB, int, int) (int, *exceptions.BaseErrorResponse)
 	GetUserDetailByUsername(*gorm.DB, string) (payloads.UserDetails, *exceptions.BaseErrorResponse)
 	Create(*gorm.DB, payloads.CreateRequest, int) (int, *exceptions.BaseErrorResponse)
-	Update(*gorm.DB, payloads.CreateRequest, int) (bool, *exceptions.BaseErrorResponse)
+	// Update(*gorm.DB, payloads.CreateRequest, int) (bool, *exceptions.BaseErrorResponse)
 	Delete(*gorm.DB, int) (bool, *exceptions.BaseErrorResponse)
 	GetAllRole(*gorm.DB) ([]payloads.RoleResponse, *exceptions.BaseErrorResponse)
-	GetPermissionsByRoleID(*gorm.DB, int) []payloads.PermissionDetail
+	// GetPermissionsByRoleID(*gorm.DB, int) []payloads.PermissionDetail
 	GetRoleById(*gorm.DB, int) (payloads.RoleResponse, *exceptions.BaseErrorResponse)
 	// GetRoleWithPermissions(*gorm.DB, int) (payloads.RoleResponse, *exceptions.BaseErrorResponse)
 }

@@ -17,6 +17,7 @@ type AuthRepository interface {
 	// ResetPassword(*gorm.DB, payloads.ResetPasswordRequest) (bool, *exceptions.BaseErrorResponse)
 	// UpdateCredential(*gorm.DB, payloads.LoginCredential, int) (bool, *exceptions.BaseErrorResponse)
 
-	GetRoleWithPermissions(tx *gorm.DB, roleID int) (payloads.RoleResponse, *exceptions.BaseErrorResponse)
-	CheckUserExists(tx *gorm.DB, username string) (bool, *exceptions.BaseErrorResponse)
+	// GetRoleWithPermissions(tx *gorm.DB, roleID int) (payloads.RoleResponse, *exceptions.BaseErrorResponse)
+	CheckUserExists(*gorm.DB, string) (bool, *exceptions.BaseErrorResponse)
+	GetRoleByUserID(*gorm.DB, int) (payloads.RoleResponse, *exceptions.BaseErrorResponse)
 }

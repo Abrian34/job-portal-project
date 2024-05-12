@@ -1,10 +1,8 @@
 package payloads
 
 type CreateRequest struct {
-	UserName     string `json:"username" validate:"required,max=30,min=5" `
-	Email        string `json:"email" validate:"required,email"`
-	ActiveStatus bool   `json:"active_status" validate:"required"`
-	UserPassword string `json:"user_password" validate:"required,max=100,min=5"`
+	UserName     string `json:"username" validate:"required"`
+	UserPassword string `json:"user_password" validate:"required"`
 }
 
 type UserDetails struct {
@@ -15,7 +13,6 @@ type UserDetails struct {
 type LoginRequest struct {
 	Username     string `json:"username" validate:"required"`
 	UserPassword string `json:"user_password" validate:"required"`
-	Client       string `json:"client" validate:"required"`
 }
 
 type LoginCredential struct {
@@ -42,18 +39,15 @@ type CurrentUserResponse struct {
 }
 
 type RoleResponse struct {
-	RoleId      int                `json:"role_id"`
-	RoleName    string             `json:"role_name"`
-	Permissions []PermissionDetail `json:"permissions"`
-}
-
-type PermissionDetail struct {
-	PermissionId   int    `json:"permission_id"`
-	PermissionName string `json:"permission_name"`
+	RoleId   int    `json:"role_id"`
+	RoleName string `json:"role_name"`
 }
 
 type LoginResponse struct {
-	User        UserDetail         `json:"user"`
-	Permissions []PermissionDetail `json:"permissions"`
-	Token       string             `json:"token"`
+	User  UserDetail `json:"user"`
+	Token string     `json:"token"`
+}
+
+type RegisterResponse struct {
+	UserID int `json:"user_id"`
 }
