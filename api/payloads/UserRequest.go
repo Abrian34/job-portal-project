@@ -3,6 +3,7 @@ package payloads
 type CreateRequest struct {
 	UserName     string `json:"username" validate:"required"`
 	UserPassword string `json:"user_password" validate:"required"`
+	RoleId       int    `json:"role_id"`
 }
 
 type UserDetails struct {
